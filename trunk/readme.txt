@@ -1,6 +1,6 @@
 === STS - SAVE TO SWARM ===
 Contributors: app.hebjit.com , metaprovide.org
-Tags: hejbit, nextcloud, save, webdav, sts, swarm
+Tags: hejbit, Nextcloud, save, webdav, sts, swarm
 Requires at least: 7.0
 Requires PHP: 7.3
 Tested up to: 6.5
@@ -11,9 +11,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-This plugin is a simple and effective tool to backup your WordPress site and its database directly to your Hejbit Folder on NextCloud account. With it, you can define the parameters to create regular copies of your site, including the frequency and time of the operation.
+This plugin is a simple and effective tool to backup your WordPress site and its database directly to your Hejbit Folder on Nextcloud account. With it, you can define the parameters to create regular copies of your site, including the frequency and time of the operation.
 
-Once you have configured the parameters, the plugin will automatically run in the background to create backups of your site and its database according to your schedule. Backups are stored directly on your NextCloud account, allowing you to access them from anywhere, at any time.
+Once you have configured the parameters, the plugin will automatically run in the background to create backups of your site and its database according to your schedule. Backups are stored directly on your Nextcloud account, allowing you to access them from anywhere, at any time.
 
 This plugin is easy to install and configure, and it offers a complete backup solution to protect your site from data loss in the event of a technical problem or hacking. By choosing this plugin, you can have peace of mind knowing that your site is safe.
 
@@ -52,6 +52,6 @@ Delete the plugin : remove tables and options
 https://app.hejbit.com/
 
 == Acknowledgements ==
-This plugin would not have been possible without the solid foundation laid by Dave Delalleau. His work on the Save to Nextcloud plugin (https://wordpress.org/plugins/stn-save-to-nextcloud/#developers) has been instrumental in shaping this project. We deeply appreciate his contributions and effort in making website backups more accessible and reliable. Thank you, Dave, for your dedication and hard work!
+This plugin would not have been possible without the solid foundation laid by Dave Delalleau. His work on the Save to Nextcloud plugin (https://wordpress.org/plugins/stn-save-to-Nextcloud/#developers) has been instrumental in shaping this project. We deeply appreciate his contributions and effort in making website backups more accessible and reliable. Thank you, Dave, for your dedication and hard work!
 
 We would also like to acknowledge the Nextcloud community for their continued efforts in building a robust, open-source platform for file storage and collaboration. Their commitment to privacy, security, and decentralization has made it possible for projects like this to thrive. The flexibility and reliability of Nextcloud ensure that users have full control over their data, making it an ideal solution for secure backups.
