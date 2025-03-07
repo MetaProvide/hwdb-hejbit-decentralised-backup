@@ -3,17 +3,18 @@
 // Fixes a security issue mentioned in the email
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
-/** 
- * Plugin Name: HejBit WordPress Decentralised Backup
- * Plugin URI: httsp://app.hejbit.com/
- * Description: WordPress backup to your Hejbit Swarm Folder on NextCloud account.
- * Version: 2.4.8
- * Author: Hejbit
- * Author URI: https://app.hejbit.com
- * Network: True
- * Contributors: João Raposo <metajoao@metaprovide.org>
- *
- */
+/*
+Plugin Name: HejBit WordPress Decentralised Backup
+Plugin URI: https://app.hejbit.com/
+Description: WordPress backup to your Hejbit Swarm Folder on NextCloud account.
+Version: 2.4.8
+Author: Hejbit
+Author URI: https://app.hejbit.com
+Network: True
+Contributors: João Raposo <metajoao@metaprovide.org>
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+*/
 
 // Main folder of the plugin
 define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hwdb-hejbit-wp-decentralised-backup/");
