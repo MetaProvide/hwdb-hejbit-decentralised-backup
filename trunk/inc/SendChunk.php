@@ -1,21 +1,19 @@
 <?php 
 	
 /**
-
-	This file allows sending file chunks to NextCloud.
-
+	This file allows sending file chunks to NextCloud for HejBit WordPress Decentralised Backup.
 **/
 
 // Fix a security issue mentioned in the email
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Opening the zip
-$handle = fopen(ABSPATH . "stsSave_final.zip", 'rb');
+$handle = fopen(ABSPATH . "hejbitSave_final.zip", 'rb');
 
 // Read the next chunk of the file
 fseek( $handle , intval( $inProgress['fileNumber'] ) );
 
-$memoryFree = sts_save_to_nextcloud::sts_get_memory();
+$memoryFree = hejbit_save_to_nextcloud::hejbit_get_memory();
 
 $thisChunk = fread($handle, ( $memoryFree ) );
 
@@ -53,10 +51,10 @@ if ( !empty( $thisChunk ) ){
 	// Update the database with the new file number
 	$data = array( "fileNumber"  => ( $inProgress['fileNumber'] + $memoryFree ) );
 	$where = array("finish" => 0 );
-	$wpdb->update($wpdb->prefix.'sts_saveInProgress', $data, $where);	
+	$wpdb->update($wpdb->prefix.'hejbit_saveInProgress', $data, $where);	
 					
 	// Restart the cron and exit
-	wp_schedule_single_event(time(),'sts_SaveInProgress');
+	wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 		
 	exit();
 		
@@ -70,9 +68,9 @@ $datafinish = array(
 				"fileNumber"  => 0
 			  );
 $wherefinish = array( "finish" => 0 );
-$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );
+$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );
 
 // Start the next step
-wp_schedule_single_event(time(),'sts_SaveInProgress');
+wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 
 ?>

@@ -1,11 +1,8 @@
 <?php
 
 /**
-	
-	The query gathers all the pieces of the tar (chunks) into a tar file in NextCloud
-
+	The query gathers all the pieces of the tar (chunks) into a tar file in NextCloud for HejBit WordPress Decentralised Backup.
 **/ 
-
 
 // Fix a security issue mentioned in the email
 if(!defined( 'ABSPATH' )){exit();}
@@ -74,7 +71,7 @@ foreach ($tab_dir as $dir){
 
 
 // Prepare the headers
-$finalName = "sts_save_" . sts_save_to_nextcloud::getDomain() . "_" . date('YmdHis') ;
+$finalName = "hejbit_save_" . hejbit_save_to_nextcloud::getDomain() . "_" . date('YmdHis') ;
 $destination = get_option('url_dlwcloud').'/remote.php/dav/files/'.get_option('login_dlwcloud').get_option('folder_dlwcloud') . $finalName . ".zip";
 
 $headers = array(
@@ -107,7 +104,7 @@ $datafinish = array(
 				"finish" => 1
 			  );
 $wherefinish = array("finish" => 0);
-$wpdb->update($wpdb->prefix.'sts_saveInProgress', $datafinish, $wherefinish);					  
+$wpdb->update($wpdb->prefix.'hejbit_saveInProgress', $datafinish, $wherefinish);					  
 
 $info= "Your site backup is complete and decentralized on your Hejbit folder!"; 
 $this->sendInfo("SUCCESS",$info);

@@ -1,10 +1,7 @@
 <?php
 
 /**
-	
-	This file is used to create a file on the FTP containing the database script.
-
-
+	This file is used to create a file on the FTP containing the database script for HejBit WordPress Decentralised Backup.
 **/
 
 // Fixes a security issue mentioned in the email
@@ -17,7 +14,7 @@ $OA_SQL = array(
 
 // OTHER APPS
 // Including an OtherApps.php file
-$otherSqlFiles = glob(PLUGIN_PATH_STS.'inc/OthersApps_*.php');
+$otherSqlFiles = glob(PLUGIN_PATH_HEJBIT.'inc/OthersApps_*.php');
 foreach ($otherSqlFiles as $sqlFile) {
     include $sqlFile;
 }
@@ -39,7 +36,7 @@ foreach ( $OA_SQL as $thisDB ) {
 	}
 
 	// Create and open the backup file on the server in binary write mode
-	$dbfile = ABSPATH . "stsSave_DB_".$thisDB['NameApp'].".sql";
+	$dbfile = ABSPATH . "hejbitSave_DB_".$thisDB['NameApp'].".sql";
 	$handle = fopen($dbfile, "wb");
 
 	fwrite($handle, "/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\n/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;\n/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;\n/*!40101 SET NAMES utf8mb4 */;\n\n");
@@ -117,8 +114,8 @@ if( get_option("db_only_dlwcloud") == "true"){
 }
 
 $wherefinish = array("finish" => 0);
-$wpdb->update($wpdb->prefix.'sts_saveInProgress', $datafinish, $wherefinish);
+$wpdb->update($wpdb->prefix.'hejbit_saveInProgress', $datafinish, $wherefinish);
 
 // Launch the next step
-wp_schedule_single_event(time(), 'sts_SaveInProgress');
+wp_schedule_single_event(time(), 'hejbit_SaveInProgress');
 ?>

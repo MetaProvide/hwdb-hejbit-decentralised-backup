@@ -1,6 +1,6 @@
-=== STS - SAVE TO SWARM ===
+=== HejBit WordPress Decentralised Backup ===
 Contributors: app.hebjit.com , metaprovide.org
-Tags: hejbit, Nextcloud, save, webdav, sts, swarm
+Tags: hejbit, nextcloud, save, webdav, hwdb, swarm, backup, decentralised
 Requires at least: 7.0
 Requires PHP: 7.3
 Tested up to: 6.5
@@ -22,7 +22,7 @@ WARNING: WARNING: Automatic restoration of backups is not yet possible. It must 
 
 == Installation ==
 
-Install STS from the Wordpress store and activate it
+Install HejBit WordPress Decentralised Backup from the Wordpress store and activate it
 Configure the settings in the menu 'Save To Nextcloud' -> 'Backup'
 
 The "Save schedule" button schedules your next backup.
@@ -42,8 +42,8 @@ Several steps are required, and each step depends on the maximum memory allocate
 6- Cleaning of residual files on the hosting and deletion of obsolete backups on Nextcloud
 
 API, Two access points are available:
-/wp-json/STS/saves to retrieve the number of active backups and their name, as well as the next backup
-/wp-json/STS/param to retrieve the backup frequency, the day, the time and the number to keep
+/wp-json/HejBit-WordPress-Decentralised-Backup/saves to retrieve the number of active backups and their name, as well as the next backup
+/wp-json/HejBit-WordPress-Decentralised-Backup/param to retrieve the backup frequency, the day, the time and the number to keep
 
 Disable the plugin: delete the schedules
 Delete the plugin : remove tables and options

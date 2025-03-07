@@ -1,9 +1,8 @@
 <?php
 
-/*
-* Creation of partial Zip files
-*
-*/
+/**
+	Creation of partial Zip files for HejBit WordPress Decentralised Backup.
+**/
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Listing of files to back up with exclusion of cache folders
@@ -25,17 +24,17 @@ $size = 0;
 // Zip creation
 $zip = new ZipArchive();
 
-if ( !file_exists( ABSPATH . "stsSave_final.zip" ) ){
+if ( !file_exists( ABSPATH . "hejbitSave_final.zip" ) ){
 	
-	$zip->open(ABSPATH . "stsSave_final.zip", ZipArchive::CREATE);
+	$zip->open(ABSPATH . "hejbitSave_final.zip", ZipArchive::CREATE);
 	
 }else{
 	
-	$zip->open(ABSPATH . "stsSave_final.zip");
+	$zip->open(ABSPATH . "hejbitSave_final.zip");
 
 };
 
-$memoryFree = sts_save_to_nextcloud::sts_get_memory();
+$memoryFree = hejbit_save_to_nextcloud::hejbit_get_memory();
 
 foreach($content_file as $name => $file) {	
 
@@ -79,10 +78,10 @@ foreach($content_file as $name => $file) {
 				$where = array("finish" => 0 );
 
 				// Execute the query
-				$wpdb->update($wpdb->prefix.'sts_saveInProgress', $data, $where);
+				$wpdb->update($wpdb->prefix.'hejbit_saveInProgress', $data, $where);
 						
 				// Launch the next ZIP
-				wp_schedule_single_event(time(),'sts_SaveInProgress');
+				wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 						
 				// End of the script before cron restart to avoid timeout
 				exit();
@@ -104,8 +103,8 @@ $datafinish = array(
 				"fileNumber"  => 0 
 			  );
 $wherefinish = array( "finish" => 0 );
-$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );
+$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );
 
 // Launch the next step
-wp_schedule_single_event(time(),'sts_SaveInProgress');
+wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 ?>

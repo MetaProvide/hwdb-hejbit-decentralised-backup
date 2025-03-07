@@ -4,10 +4,10 @@
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 /** 
- * Plugin Name: STS - Save To Swarm
- *  * Plugin URI: httsp://app.hejbit.com/
+ * Plugin Name: HejBit WordPress Decentralised Backup
+ * Plugin URI: httsp://app.hejbit.com/
  * Description: WordPress backup to your Hejbit Swarm Folder on NextCloud account.
- *  * Version: 2.4.7
+ * Version: 2.4.7
  * Author: Hejbit
  * Author URI: https://app.hejbit.com
  * Network: True
@@ -15,11 +15,10 @@ if( !defined( 'ABSPATH' ) ){ exit(); }
  *
  */
 
-
 // Main folder of the plugin
-define('PLUGIN_PATH_STS', dirname(plugin_dir_path( __FILE__ )) . "/sts-save-to-swarm/");
+define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hwdb-hejbit-wp-decentralised-backup/");
 
-class sts_save_to_nextcloud{	
+class hejbit_save_to_nextcloud{	
 	
 	// Activation
 	function activate(){
@@ -31,7 +30,7 @@ class sts_save_to_nextcloud{
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// Table name
-		$nameTable = $wpdb->prefix.'sts_saveInProgress';
+		$nameTable = $wpdb->prefix.'hejbit_saveInProgress';
 		// Query for creating the table
 		$sql = "CREATE TABLE IF NOT EXISTS $nameTable ( 
 					id_zip int(11) NOT NULL auto_increment,
@@ -50,25 +49,25 @@ class sts_save_to_nextcloud{
 		dbDelta($sql);
 	}
 		
-	//Deactivation
+	// Deactivation
 	function desactivate(){
 
 		//Deletion of the cron jobs
-		if ( wp_next_scheduled ('sts_Save') ) {
+		if ( wp_next_scheduled ('hejbit_Save') ) {
 			
-			wp_clear_scheduled_hook('sts_Save');
+			wp_clear_scheduled_hook('hejbit_Save');
 		
 		};	
 		
-		if ( wp_next_scheduled ('sts_Save',array('next')) ) {
+		if ( wp_next_scheduled ('hejbit_Save',array('next')) ) {
 			
-			wp_clear_scheduled_hook('sts_Save',array('next'));
+			wp_clear_scheduled_hook('hejbit_Save',array('next'));
 		
 		};
 		
 		// Delete the tables
 		global $wpdb;
-		$nameTable =$wpdb->prefix.'sts_saveInProgress';	
+		$nameTable =$wpdb->prefix.'hejbit_saveInProgress';	
 		$wpdb->query( "DROP TABLE IF EXISTS $nameTable" );
 		
 		// Deletion of the options
@@ -76,26 +75,25 @@ class sts_save_to_nextcloud{
 		foreach ($plugin_options as $option) {
 			delete_option($option->option_name);
 		}		
-						
 		
 	}
 
 	// Backup
-	function sts_SaveInProgress($NbrRelance = 0){
+	function hejbit_SaveInProgress($NbrRelance = 0){
 		
 		global $wpdb;
 		$nc_status = true;
 		$hejbit_folder = true;
 
-		// Storing the backup status
-		$table_site=$wpdb->prefix."sts_saveInProgress";
+		// Storing the backup 
+		$table_site=$wpdb->prefix."hejbit_saveInProgress";
 		$rows = $wpdb->get_row("SELECT * from $table_site WHERE finish = 0 ");
 		
 		// If no backup is in progress, create a new backup
 		if ( empty( $rows->id_zip ) ) {
 										
 				// Creation of a new backup
-				$nomTable = $wpdb->prefix.'sts_saveInProgress';
+				$nomTable = $wpdb->prefix.'hejbit_saveInProgress';
 
 				$inProgress = array(
 					"fileNumber" => 0,
@@ -121,10 +119,10 @@ class sts_save_to_nextcloud{
 	          	    
 			case "0":
 				error_log('DB-Exporting-BEGIN');
-				// Export of thee DB
+				// Export of the DB
 				include ('inc/CreateDB.php');
 				error_log('DB-Exporting-END');	
-				// End of the script before realaunch by cron to avoid timeout
+				// End of the script before relaunch by cron to avoid timeout
 				exit();
 
 			
@@ -149,8 +147,8 @@ class sts_save_to_nextcloud{
 			
 			case "3":
 				error_log('Sending-Chunk-BEGIN');
-				$nc_status = sts_save_to_nextcloud::is_NextCloud_good();
-				$hejbit_folder = sts_save_to_nextcloud::is_Folder_hejbit();
+				$nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
+				$hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
 			
 
 				error_log('Nextcloud status: ' . ($nc_status ? 'active' : 'inactive'));
@@ -195,7 +193,7 @@ class sts_save_to_nextcloud{
 										"uuid" => $dirChunk
 									  );
 						$wherefinish = array( "finish" => 0 );
-						$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );	
+						$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );	
 						
 						//Adding the created UUID to the inProgress array
 						$inProgress['uuid'] = $dirChunk;					
@@ -213,7 +211,7 @@ class sts_save_to_nextcloud{
 									"finish" => 1
 								  );
 					$wherefinish = array( "finish" => 0 );
-					$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );
+					$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );
 						
 					
 					if (!$nc_status){
@@ -233,7 +231,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 			case "4":
 				error_log('MergingChunk-BEGIN');
 				// If the connection with NextCloud is correct
-				if(sts_save_to_nextcloud::is_NextCloud_good()){
+				if(hejbit_save_to_nextcloud::is_NextCloud_good()){
 					
 					// Rebuilding the chunks on NextCloud
 					include ('inc/MergeChunk.php');
@@ -245,7 +243,7 @@ Please ensure that your backup folder is obtained directly from your web server 
  					if ( $NbrRelance < 3 ) {
 						
 						$NbrRelance++;
-						wp_schedule_single_event(time() + 600 ,'sts_SaveInProgress', array($NbrRelance));
+						wp_schedule_single_event(time() + 600 ,'hejbit_SaveInProgress', array($NbrRelance));
 					
 					}else{
 						
@@ -254,7 +252,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 										"finish" => 1
 									  );
 						$wherefinish = array( "finish" => 0 );
-						$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );
+						$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );
 							
 						// Sending the notification email and cleanup
 						$info= "The connection to your Nextcloud instance was lost during the sending of your backup, it must be retrieved directly from your web server (ftp).<br>Please check the information regarding your Nextcloud instance and ensure it is accessible online."; 
@@ -272,19 +270,19 @@ Please ensure that your backup folder is obtained directly from your web server 
 	}
 	
 	// Scheduling the instant backup
-	static function sts_Save($next=null){
+	static function hejbit_Save($next=null){
 		
 		// Clean
 		global $wpdb;
-		$wpdb->delete( $wpdb->prefix.'sts_saveInProgress', array("finish" => "0" ) );
-		$filesInFtp = glob(ABSPATH . "stsSave_*");
+		$wpdb->delete( $wpdb->prefix.'hejbit_saveInProgress', array("finish" => "0" ) );
+		$filesInFtp = glob(ABSPATH . "hejbitSave_*");
 		foreach($filesInFtp as $file){ 	unlink($file);	};	
 		
 
 		// Starting the backup
-		if (!wp_next_scheduled ('sts_SaveInProgress')) {
+		if (!wp_next_scheduled ('hejbit_SaveInProgress')) {
 			
-			wp_schedule_single_event(time(),'sts_SaveInProgress');
+			wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 			
 		};
 		
@@ -294,19 +292,19 @@ Please ensure that your backup folder is obtained directly from your web server 
 			// Redirecting to admin page
 			if(is_multisite()){
 				// Redirects to the page
-				wp_redirect('/wp-admin/network/admin.php?page=sts_swarm-backup&save=now');
+				wp_redirect('/wp-admin/network/admin.php?page=hejbit_swarm-backup&save=now');
 			}
 			// If we are on a standard site
 			else{
 				// Redirects to the page
-				wp_redirect('/wp-admin/admin.php?page=sts_swarm-backup&save=now');
+				wp_redirect('/wp-admin/admin.php?page=hejbit_swarm-backup&save=now');
 
 			}
 			
 		// Scheduled launch
 		}else{
 			
-			sts_save_to_nextcloud::sts_programSave();
+			hejbit_save_to_nextcloud::hejbit_programSave();
 						
 		};
 		
@@ -326,8 +324,8 @@ Please ensure that your backup folder is obtained directly from your web server 
 	static function sendInfo($type,$text){
 	
 		// Objects
-		$sujet = $type . ' > About the backup of '. sts_save_to_nextcloud::getDomain();
-		$headers[] = 'From: Save to Swarm <savetonextcloud@'. sts_save_to_nextcloud::getDomain().'>';
+		$sujet = $type . ' > About the backup of '. hejbit_save_to_nextcloud::getDomain();
+		$headers[] = 'From: HejBit WordPress Decentralised Backup <savetonextcloud@'. hejbit_save_to_nextcloud::getDomain().'>';
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 
 		wp_mail( get_option('email_dlwcloud') , $sujet, $text, $headers);
@@ -390,7 +388,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 		// If the connection is correct
 		else{
 			//check is folder is swarm
-			return sts_save_to_nextcloud::check_ethswarm_node_status($nextcloud_response);
+			return hejbit_save_to_nextcloud::check_ethswarm_node_status($nextcloud_response);
 		}
 	}
 	
@@ -438,11 +436,11 @@ Please ensure that your backup folder is obtained directly from your web server 
 	
 	
 	// Scheduled backup
-	static function sts_programSave(){
+	static function hejbit_programSave(){
 		
-		if ( wp_next_scheduled ('sts_Save',array('next')) ) {
+		if ( wp_next_scheduled ('hejbit_Save',array('next')) ) {
 			
-			wp_clear_scheduled_hook('sts_Save',array('next'));
+			wp_clear_scheduled_hook('hejbit_Save',array('next'));
 		
 		};		
 			
@@ -477,11 +475,11 @@ Please ensure that your backup folder is obtained directly from your web server 
 			}
 		}
 
-		wp_schedule_single_event($timestamp,'sts_Save',array('next'));
+		wp_schedule_single_event($timestamp,'hejbit_Save',array('next'));
 
 	}
 	
-	function sts_get_memory() {
+	function hejbit_get_memory() {
 		
 		$memoryBefore = memory_get_usage();
 		
@@ -507,17 +505,17 @@ Please ensure that your backup folder is obtained directly from your web server 
 };
 
 // Admin view
-$save_to_nextcloud=new sts_save_to_nextcloud();
-register_activation_hook( PLUGIN_PATH_STS . 'STS.php',array($save_to_nextcloud,'activate'));
-register_deactivation_hook( PLUGIN_PATH_STS . 'STS.php',array($save_to_nextcloud,'desactivate'));
-add_action('sts_Save', array($save_to_nextcloud,'sts_Save'));
-add_action('sts_SaveInProgress', array($save_to_nextcloud,'sts_SaveInProgress'));
-add_action('admin_post_ProgramSave', array($save_to_nextcloud,'sts_ProgramSave'));
-add_action('admin_post_saveNow',array($save_to_nextcloud,'sts_Save'));
+$save_to_nextcloud=new hejbit_save_to_nextcloud();
+register_activation_hook( PLUGIN_PATH_HEJBIT . 'HWDB.php',array($save_to_nextcloud,'activate'));
+register_deactivation_hook( PLUGIN_PATH_HEJBIT . 'HWDB.php',array($save_to_nextcloud,'desactivate'));
+add_action('hejbit_Save', array($save_to_nextcloud,'hejbit_Save'));
+add_action('hejbit_SaveInProgress', array($save_to_nextcloud,'hejbit_SaveInProgress'));
+add_action('admin_post_ProgramSave', array($save_to_nextcloud,'hejbit_ProgramSave'));
+add_action('admin_post_saveNow',array($save_to_nextcloud,'hejbit_Save'));
 
 
 // Activation of auto updates for WP
-$next_event_timestamp = wp_next_scheduled('sts_SaveInProgress');
+$next_event_timestamp = wp_next_scheduled('hejbit_SaveInProgress');
 
 // If the option to manage auto updates is enabled
 if ( get_option("auto_update_dlwcloud") == "true" ) {
@@ -525,7 +523,7 @@ if ( get_option("auto_update_dlwcloud") == "true" ) {
 	global $wpdb;
 
 	// Last backup date
-	$sql = "SELECT name FROM " . $wpdb->prefix . "sts_saveInProgress ORDER BY id_zip DESC LIMIT 1";
+	$sql = "SELECT name FROM " . $wpdb->prefix . "hejbit_saveInProgress ORDER BY id_zip DESC LIMIT 1";
 	$lastSave = $wpdb->get_results($sql);
 
 	// Check if there are results
@@ -580,30 +578,30 @@ if (is_admin()){
 	// If we are on a multisite
 	if(is_multisite()){
 		// Add the menu, not as a sub-menu
-		add_action('network_admin_menu','sts_savetonextcloud_setup_menu');
+		add_action('network_admin_menu','hejbit_savetonextcloud_setup_menu');
 	}
 	// If we are on a single site
 	else{
 		// Adds the menu in the settings
-		add_action('admin_menu','sts_savetonextcloud_setup_menu');
+		add_action('admin_menu','hejbit_savetonextcloud_setup_menu');
 	}
 	
 	// Function to add the menu
-	function sts_savetonextcloud_setup_menu(){
+	function hejbit_savetonextcloud_setup_menu(){
 		// Menu creation
-		add_menu_page('Save To Swarm', 'Save To Swarm', 'manage_options', 'sts_nextcloud');
+		add_menu_page('HejBit WordPress Decentralised Backup', 'HejBit WordPress Decentralised Backup', 'manage_options', 'hejbit_nextcloud');
 		// Adds a 'Backup' sub-menu
-		add_submenu_page('sts_nextcloud', 'Backup', 'Backup', 'manage_options', 'sts_swarm-backup', 'sts_savetonextcloud_param'); 
+		add_submenu_page('hejbit_nextcloud', 'Backup', 'Backup', 'manage_options', 'hejbit_swarm-backup', 'hejbit_savetonextcloud_param'); 
 
-		// The method 'add_menu_page()' also creates a 'Save To Swarm' sub-menu, so we delete it
-		remove_submenu_page('sts_nextcloud', 'sts_nextcloud');
+		// The method 'add_menu_page()' also creates a 'HejBit WordPress Decentralised Backup' sub-menu, so we delete it
+		remove_submenu_page('hejbit_nextcloud', 'hejbit_nextcloud');
 		 	  
 	}
 
 	// Declaration of admin settings
-	add_action( 'admin_init', 'sts_savetonextcloud_settings' );	
+	add_action( 'admin_init', 'hejbit_savetonextcloud_settings' );	
 	
-	function sts_savetonextcloud_settings() {
+	function hejbit_savetonextcloud_settings() {
 		
 	  register_setting( 'nextcloud-group', 'url_dlwcloud' );
 	  register_setting( 'nextcloud-group', 'login_dlwcloud' );
@@ -620,26 +618,26 @@ if (is_admin()){
 	}	
 	
 	
-	function sts_notification() {
+	function hejbit_notification() {
 		// Check if the settings were successfully updated
 		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
 			
-			$timestamp = wp_next_scheduled('sts_Save','next');
+			$timestamp = wp_next_scheduled('hejbit_Save','next');
 			$date_format = 'j F Y, H:i'; // Custom date format
 			$formatted_date = date_i18n($date_format, $timestamp);			
 
 			$notif = "Your next backup is scheduled for the ".$formatted_date.". If you haven't done so yet, click the \"Backup Now\" button to avoid waiting.";
-			add_settings_error('sts', 'sts_success', $notif, 'updated-nag');
+			add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
         
 		}else if(isset($_GET['save'])){
 			
 			$notif = "The backup is in progress, this may take a few minutes. You will receive an email once it is complete.";
-			add_settings_error('sts', 'sts_success', $notif, 'updated-nag');
+			add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
 
 		};
 	}
-	// add_action('admin_notices', 'sts_notification');
-	add_action('admin_init', 'sts_notification');
+	// add_action('admin_notices', 'hejbit_notification');
+	add_action('admin_init', 'hejbit_notification');
 
 	
 }
@@ -681,7 +679,7 @@ function all_user_param() {
 
 add_action( 'rest_api_init', function () {
 	// Create the 'parameter' route in the API
-	register_rest_route("STS", 'param', array(
+	register_rest_route("hejbit", 'param', array(
 	'methods' => 'GET',
 	'callback' => 'all_user_param',
 	'permission_callback' => '__return_true',
@@ -697,7 +695,7 @@ function get_all_saves() {
 	$result = array();
 
 	// Counts the number of backups
-	$sql = "SELECT * FROM " . $wpdb->prefix . "sts_saveInProgress";
+	$sql = "SELECT * FROM " . $wpdb->prefix . "hejbit_saveInProgress";
 	
 	// Execute the query
 	$allSaves = $wpdb->get_results($sql);
@@ -706,7 +704,7 @@ function get_all_saves() {
 	$result["nbSaves"] = count($allSaves);
 	
 	// Retrieving the date of the next backup
-	$timestamp = wp_next_scheduled( 'sts_Save',array('next'));
+	$timestamp = wp_next_scheduled( 'hejbit_Save',array('next'));
 
 	if ( $timestamp ) {
 		
@@ -741,7 +739,7 @@ function get_all_saves() {
 // Create the action 'get_user_param'
 add_action( 'rest_api_init', function () {
 		// Create the "parameter" route in the API
-		register_rest_route("STS", 'saves', array(
+		register_rest_route("hejbit", 'saves', array(
 		// GET Method
 		'methods' => 'GET',
 		// Call the method 'all_user_param'
@@ -753,10 +751,10 @@ add_action( 'rest_api_init', function () {
 
 
 // Admin page
-function sts_savetonextcloud_param(){?>
+function hejbit_savetonextcloud_param(){?>
 	
 <div class="wrap">
-	<h2>Save To Swarm</h2>
+	<h2>HejBit WordPress Decentralised Backup</h2>
 	<h2>Backup</h2>
 	<p>Please fill in your settings</p>
 	<form method="post" action="<?php echo admin_url( 'options.php' );?>">
@@ -881,7 +879,7 @@ function sts_savetonextcloud_param(){?>
 		// If we are saving new options
 		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == true) {
 			// Schedule the next backup
-			sts_save_to_nextcloud::sts_ProgramSave();
+			hejbit_save_to_nextcloud::hejbit_ProgramSave();
 		}
 		submit_button("Save the schedule"); ?>
 	</form>
@@ -895,4 +893,4 @@ function sts_savetonextcloud_param(){?>
 	month at the chosen time and day starting next month</br>The \"Make a backup now\" button allows you to
 	launch a backup without waiting.</br></p>
 </div>
-<?php settings_errors('sts'); };?>
+<?php settings_errors('hejbit'); };?>

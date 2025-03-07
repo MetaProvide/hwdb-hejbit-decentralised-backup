@@ -1,21 +1,21 @@
 <?php
 
-/*
-* Merge the files to be backed up into a single Zip
-*
-*/
+/**
+	Merge the files to be backed up into a single Zip for HejBit WordPress Decentralised Backup.
+**/
+
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Create the Zip archive
 $zipMerge = new ZipArchive();
 
-if ( !file_exists( ABSPATH . "stsSave_final.zip" ) ){
+if ( !file_exists( ABSPATH . "hejbitSave_final.zip" ) ){
 	
-	$zipMerge->open(ABSPATH . "stsSave_final.zip", ZipArchive::CREATE);
+	$zipMerge->open(ABSPATH . "hejbitSave_final.zip", ZipArchive::CREATE);
 	
 }else{
 	
-	$zipMerge->open(ABSPATH . "stsSave_final.zip");
+	$zipMerge->open(ABSPATH . "hejbitSave_final.zip");
 
 };
 
@@ -48,9 +48,9 @@ $datafinish = array(
 				"status" => 3
 			  );
 $wherefinish = array( "finish" => 0 );
-$wpdb->update( $wpdb->prefix.'sts_saveInProgress' , $datafinish, $wherefinish );
+$wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish );
 
 // Schedule the next step of the backup process
-wp_schedule_single_event(time(),'sts_SaveInProgress');
+wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 
 ?>
