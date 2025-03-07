@@ -887,10 +887,16 @@ function hejbit_savetonextcloud_param(){?>
 		<input type="hidden" name="action" value="saveNow">
 		<?php submit_button('Make a backup now');?>
 	</form>		
-	<p>The \"Save changes\" button allows you to automate the launch of future backups according to the
-	preferences indicated: </br> - weekly: Every week at the chosen time and day starting next week.
-	</br> - bimonthly: The first and third week of the month at the chosen time and day </br> - monthly: The first week of the
-	month at the chosen time and day starting next month</br>The \"Make a backup now\" button allows you to
-	launch a backup without waiting.</br></p>
+	<p>
+    	The <strong>"Save the schedule"</strong> button allows you to automate the launch of future backups according to the preferences indicated:
+	</p>
+	<ul>
+    	<li><strong>Weekly:</strong> Every week at the chosen time and day, starting next week.</li>
+    	<li><strong>Bi-monthly:</strong> The first and third week of the month at the chosen time and day.</li>
+    	<li><strong>Monthly:</strong> The first week of the month at the chosen time and day, starting next month.</li>
+	</ul>
+	<p>
+    	The <strong>"Make a backup now"</strong> button allows you to launch a backup without waiting.
+	</p>
 </div>
 <?php settings_errors('hejbit'); };?>
