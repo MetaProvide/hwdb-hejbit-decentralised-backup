@@ -217,7 +217,7 @@ class hejbit_save_to_nextcloud{
 					if (!$nc_status){
 							$info= "The connection to your Nextcloud instance was not established, your backup must be retrieved directly from your web server (ftp).<br>Please check the information regarding your Nextcloud instance and ensure it is accessible online.";
 						}else{
-							$info= "The connection to your Nextcloud instance has been successfully established. However, an error occurred because the specified backup folder is not a HejBit folder.<br>
+							$info= "The connection to your Nextcloud instance has been successfully established. However, an error occurred because the specified backup folder is not a HejBit folder, the folder is incorrect, or the path to the folder is wrong.<br>
 Please ensure that your backup folder is obtained directly from your web server (via FTP) and that you designate a HejBit folder as your destination path.";
 						}
 					// Sending the notification email and cleaning up
