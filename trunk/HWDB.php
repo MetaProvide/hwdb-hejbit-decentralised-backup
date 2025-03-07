@@ -7,7 +7,7 @@ if( !defined( 'ABSPATH' ) ){ exit(); }
  * Plugin Name: HejBit WordPress Decentralised Backup
  * Plugin URI: httsp://app.hejbit.com/
  * Description: WordPress backup to your Hejbit Swarm Folder on NextCloud account.
- * Version: 2.4.7
+ * Version: 2.4.8
  * Author: Hejbit
  * Author URI: https://app.hejbit.com
  * Network: True
