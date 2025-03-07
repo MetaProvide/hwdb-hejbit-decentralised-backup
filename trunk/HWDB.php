@@ -292,12 +292,12 @@ Please ensure that your backup folder is obtained directly from your web server 
 			// Redirecting to admin page
 			if(is_multisite()){
 				// Redirects to the page
-				wp_redirect('/wp-admin/network/admin.php?page=hejbit_swarm-backup&save=now');
+				wp_redirect('/wp-admin/network/admin.php?page=hejbit_decentralised-backup&save=now');
 			}
 			// If we are on a standard site
 			else{
 				// Redirects to the page
-				wp_redirect('/wp-admin/admin.php?page=hejbit_swarm-backup&save=now');
+				wp_redirect('/wp-admin/admin.php?page=hejbit_decentralised-backup&save=now');
 
 			}
 			
@@ -325,7 +325,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 	
 		// Objects
 		$sujet = $type . ' > About the backup of '. hejbit_save_to_nextcloud::getDomain();
-		$headers[] = 'From: HejBit WordPress Decentralised Backup <savetonextcloud@'. hejbit_save_to_nextcloud::getDomain().'>';
+		$headers[] = 'From: HejBit WordPress Decentralised Backup <hejbitbackup@'. hejbit_save_to_nextcloud::getDomain().'>';
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 
 		wp_mail( get_option('email_dlwcloud') , $sujet, $text, $headers);
@@ -591,7 +591,7 @@ if (is_admin()){
 		// Menu creation
 		add_menu_page('HejBit WordPress Decentralised Backup', 'HejBit WordPress Decentralised Backup', 'manage_options', 'hejbit_nextcloud');
 		// Adds a 'Backup' sub-menu
-		add_submenu_page('hejbit_nextcloud', 'Backup', 'Backup', 'manage_options', 'hejbit_swarm-backup', 'hejbit_savetonextcloud_param'); 
+		add_submenu_page('hejbit_nextcloud', 'Backup', 'Backup', 'manage_options', 'hejbit_decentralised-backup', 'hejbit_savetonextcloud_param'); 
 
 		// The method 'add_menu_page()' also creates a 'HejBit WordPress Decentralised Backup' sub-menu, so we delete it
 		remove_submenu_page('hejbit_nextcloud', 'hejbit_nextcloud');
@@ -679,7 +679,7 @@ function all_user_param() {
 
 add_action( 'rest_api_init', function () {
 	// Create the 'parameter' route in the API
-	register_rest_route("hejbit", 'param', array(
+	register_rest_route("HWDB", 'param', array(
 	'methods' => 'GET',
 	'callback' => 'all_user_param',
 	'permission_callback' => '__return_true',
@@ -739,7 +739,7 @@ function get_all_saves() {
 // Create the action 'get_user_param'
 add_action( 'rest_api_init', function () {
 		// Create the "parameter" route in the API
-		register_rest_route("hejbit", 'saves', array(
+		register_rest_route("HWDB", 'saves', array(
 		// GET Method
 		'methods' => 'GET',
 		// Call the method 'all_user_param'
