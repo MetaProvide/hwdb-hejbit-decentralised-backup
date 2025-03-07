@@ -55,3 +55,12 @@ https://app.hejbit.com/
 This plugin would not have been possible without the solid foundation laid by Dave Delalleau. His work on the Save to Nextcloud plugin (https://wordpress.org/plugins/stn-save-to-Nextcloud/#developers) has been instrumental in shaping this project. We deeply appreciate his contributions and effort in making website backups more accessible and reliable. Thank you, Dave, for your dedication and hard work!
 
 We would also like to acknowledge the Nextcloud community for their continued efforts in building a robust, open-source platform for file storage and collaboration. Their commitment to privacy, security, and decentralization has made it possible for projects like this to thrive. The flexibility and reliability of Nextcloud ensure that users have full control over their data, making it an ideal solution for secure backups.
+
+== Known Bugs ==
+Feature:"Make a Backup Now" Button Doesn't Work
+Description: Clicking "Make a Backup Now" causes the fields to go empty, and the backup does not work.
+Temporary Solution: The "Make a Backup Now" button should only be clicked after entering the data and saving them with "Save the Schedule".
+
+Feature: Field Changes Not Recognized
+Description: If you fill in any fields and click "Save the Schedule", but then modify a field afterward, the system does not recognize the new values. 
+Temporary Solution: The user must always click "Save the Schedule" after any field modification.
