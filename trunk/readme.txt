@@ -1,5 +1,5 @@
 === HejBit WordPress Decentralised Backup ===
-Contributors: app.hebjit.com , metaprovide.org
+Contributors: app.hejbit.com , metaprovide.org
 Tags: hejbit, nextcloud, save, webdav, hwdb, swarm, backup, decentralised
 Requires at least: 7.0
 Requires PHP: 7.3
