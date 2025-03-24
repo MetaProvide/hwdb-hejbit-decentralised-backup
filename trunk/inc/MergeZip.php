@@ -1,7 +1,7 @@
 <?php
 
 /**
-	Merge the files to be backed up into a single Zip for HejBit WordPress Decentralised Backup.
+	Merge the files to be backed up into a single Zip for HejBit Decentralised Backup.
 **/
 
 if( !defined( 'ABSPATH' ) ){ exit(); }
@@ -40,7 +40,7 @@ $zipMerge->close();
 
 foreach ($sqlFiles as $sqlFile) {
 	$sqlFilename = basename($sqlFile);
-	unlink($sqlFilename);
+	wp_delete_file($sqlFilename);
 };
 
 // Update the backup status in the database

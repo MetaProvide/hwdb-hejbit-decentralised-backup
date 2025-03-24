@@ -1,7 +1,7 @@
 <?php 
 	
 /**
-	This file allows sending file chunks to NextCloud for HejBit WordPress Decentralised Backup.
+	This file allows sending file chunks to NextCloud for HejBit Decentralised Backup.
 **/
 
 // Fix a security issue mentioned in the email

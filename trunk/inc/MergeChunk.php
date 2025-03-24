@@ -1,7 +1,7 @@
 <?php
 
 /**
-	The query gathers all the pieces of the tar (chunks) into a tar file in NextCloud for HejBit WordPress Decentralised Backup.
+	The query gathers all the pieces of the tar (chunks) into a tar file in NextCloud for HejBit Decentralised Backup.
 **/ 
 
 // Fix a security issue mentioned in the email
@@ -71,7 +71,7 @@ foreach ($tab_dir as $dir){
 
 
 // Prepare the headers
-$finalName = "hejbit_save_" . hejbit_save_to_nextcloud::getDomain() . "_" . date('YmdHis') ;
+$finalName = "hejbit_save_" . hejbit_save_to_nextcloud::getDomain() . "_" . gmdate('YmdHis') ;
 $destination = get_option('url_dlwcloud').'/remote.php/dav/files/'.get_option('login_dlwcloud').get_option('folder_dlwcloud') . $finalName . ".zip";
 
 $headers = array(

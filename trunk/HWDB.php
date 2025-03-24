@@ -4,16 +4,16 @@
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 /*
-Plugin Name: HejBit WordPress Decentralised Backup
+Plugin Name: HejBit Decentralised Backup
 Plugin URI: https://app.hejbit.com/
-Description: WordPress backup to your Hejbit Swarm Folder on NextCloud account.
-Version: 2.4.8
+Description: Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
+Version: 1.0.0
 Author: Hejbit
 Author URI: https://app.hejbit.com
-Network: True
-Contributors: João Raposo <metajoao@metaprovide.org>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Network: True
+Contributors: João Raposo <metajoao@metaprovide.org>
 */
 
 // Main folder of the plugin
@@ -277,7 +277,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 		global $wpdb;
 		$wpdb->delete( $wpdb->prefix.'hejbit_saveInProgress', array("finish" => "0" ) );
 		$filesInFtp = glob(ABSPATH . "hejbitSave_*");
-		foreach($filesInFtp as $file){ 	unlink($file);	};	
+		foreach($filesInFtp as $file){ 	wp_delete_file($file);	};	
 		
 
 		// Starting the backup
@@ -315,7 +315,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 	static function getDomain(){
 	
 		// Fetches the domain name of the WordPress site
-		$urlparts = parse_url(home_url());	
+		$urlparts = wp_parse_url(home_url());	
 		// Fetches the domain name of the WordPress site
 		return $urlparts['host'];
 	
@@ -326,7 +326,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 	
 		// Objects
 		$sujet = $type . ' > About the backup of '. hejbit_save_to_nextcloud::getDomain();
-		$headers[] = 'From: HejBit WordPress Decentralised Backup <hejbitbackup@'. hejbit_save_to_nextcloud::getDomain().'>';
+		$headers[] = 'From: HejBit Decentralised Backup <hejbitbackup@'. hejbit_save_to_nextcloud::getDomain().'>';
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 
 		wp_mail( get_option('email_dlwcloud') , $sujet, $text, $headers);
@@ -590,11 +590,11 @@ if (is_admin()){
 	// Function to add the menu
 	function hejbit_savetonextcloud_setup_menu(){
 		// Menu creation
-		add_menu_page('HejBit WordPress Decentralised Backup', 'HejBit WordPress Decentralised Backup', 'manage_options', 'hejbit_nextcloud');
+		add_menu_page('HejBit Decentralised Backup', 'HejBit Decentralised Backup', 'manage_options', 'hejbit_nextcloud');
 		// Adds a 'Backup' sub-menu
 		add_submenu_page('hejbit_nextcloud', 'Backup', 'Backup', 'manage_options', 'hejbit_decentralised-backup', 'hejbit_savetonextcloud_param'); 
 
-		// The method 'add_menu_page()' also creates a 'HejBit WordPress Decentralised Backup' sub-menu, so we delete it
+		// The method 'add_menu_page()' also creates a 'HejBit Decentralised Backup' sub-menu, so we delete it
 		remove_submenu_page('hejbit_nextcloud', 'hejbit_nextcloud');
 		 	  
 	}
@@ -709,7 +709,7 @@ function get_all_saves() {
 
 	if ( $timestamp ) {
 		
-		$date = date( 'Y-m-d H:i:s', $timestamp );
+		$date = gmdate( 'Y-m-d H:i:s', $timestamp );
 		$result["nextSave"] =  $date;
 		
 	} else {
@@ -755,10 +755,10 @@ add_action( 'rest_api_init', function () {
 function hejbit_savetonextcloud_param(){?>
 	
 <div class="wrap">
-	<h2>HejBit WordPress Decentralised Backup</h2>
+	<h2>HejBit Decentralised Backup</h2>
 	<h2>Backup</h2>
 	<p>Please fill in your settings</p>
-	<form method="post" action="<?php echo admin_url( 'options.php' );?>">
+	<form method="post" action="<?php echo esc_url(admin_url('options.php')); ?>">
 		<input type="hidden" name="action" value="ProgramSave">
 		<?php 
 		settings_fields( 'nextcloud-group' );
@@ -884,7 +884,7 @@ function hejbit_savetonextcloud_param(){?>
 		}
 		submit_button("Save the schedule"); ?>
 	</form>
-	<form action="<?php echo admin_url('admin-post.php'); ?>" method="post">
+	<form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
 		<input type="hidden" name="action" value="saveNow">
 		<?php submit_button('Make a backup now');?>
 	</form>		

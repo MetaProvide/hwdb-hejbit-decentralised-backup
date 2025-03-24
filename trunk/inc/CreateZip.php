@@ -1,7 +1,7 @@
 <?php
 
 /**
-	Creation of partial Zip files for HejBit WordPress Decentralised Backup.
+	Creation of partial Zip files for HejBit Decentralised Backup.
 **/
 if( !defined( 'ABSPATH' ) ){ exit(); }
 

@@ -1,14 +1,25 @@
 <?php 
 	
 /**
-	Cleaning up obsolete backups for HejBit WordPress Decentralised Backup.
+	Cleaning up obsolete backups for HejBit Decentralised Backup.
 **/
 
 // Fixes a security issue mentioned in the email
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
-// Selecting the names of the backups to delete
-$sql = "SELECT name,id_zip,uuid FROM " . $wpdb->prefix . "hejbit_saveInProgress WHERE finish = '1' ORDER BY id_zip DESC LIMIT ".get_option("nb_save_dlwcloud").",10";
+// Prepare the SQL query to select the names of the backups to delete
+// Use $wpdb->prepare() to securely handle dynamic values
+$sql = $wpdb->prepare(
+    "SELECT name, id_zip, uuid 
+     FROM {$wpdb->prefix}hejbit_saveInProgress 
+     WHERE finish = %d 
+     ORDER BY id_zip DESC 
+     LIMIT %d, 10",
+    1, // First placeholder: finish = 1
+    (int) get_option("nb_save_dlwcloud") // Second placeholder: dynamic limit value from options
+);
+
+// Execute the SQL query and get the results
 $result = $wpdb->get_results($sql);
 
 foreach ($result as $save){
@@ -46,6 +57,7 @@ foreach ($result as $save){
 
 // Cleaning residual files (if they exist)
 $filesInFtp = glob(ABSPATH . "hejbitSave_*");
-foreach($filesInFtp as $file){ 	unlink($file);	};
-
+foreach ($filesInFtp as $file) { 
+    wp_delete_file($file);
+}
 ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
-	This file is used to create a file on the FTP containing the database script for HejBit WordPress Decentralised Backup.
+	This file is used to create a file on the FTP containing the database script for HejBit Decentralised Backup.
 **/
 
 // Fixes a security issue mentioned in the email
