@@ -10,14 +10,14 @@ Description: Backup your WordPress site and database to your Hejbit Swarm Folder
 Version: 1.0.0
 Author: Hejbit
 Author URI: https://app.hejbit.com
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: AGPLv3 or later
+License URI: https://www.gnu.org/licenses/agpl-3.0.html
 Network: True
 Contributors: João Raposo <metajoao@metaprovide.org>
 */
 
 // Main folder of the plugin
-define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hwdb-hejbit-wp-decentralised-backup/");
+define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hwdb-hejbit-decentralised-backup/");
 
 class hejbit_save_to_nextcloud{	
 	
