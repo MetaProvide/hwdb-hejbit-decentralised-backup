@@ -17,7 +17,7 @@ Contributors: João Raposo <metajoao@metaprovide.org>
 */
 
 // Main folder of the plugin
-define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hwdb-hejbit-decentralised-backup/");
+define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hdb-hejbit-decentralised-backup/");
 
 class hejbit_save_to_nextcloud{	
 	
@@ -507,8 +507,8 @@ Please ensure that your backup folder is obtained directly from your web server 
 
 // Admin view
 $save_to_nextcloud=new hejbit_save_to_nextcloud();
-register_activation_hook( PLUGIN_PATH_HEJBIT . 'HWDB.php',array($save_to_nextcloud,'activate'));
-register_deactivation_hook( PLUGIN_PATH_HEJBIT . 'HWDB.php',array($save_to_nextcloud,'desactivate'));
+register_activation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextcloud,'activate'));
+register_deactivation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextcloud,'desactivate'));
 add_action('hejbit_Save', array($save_to_nextcloud,'hejbit_Save'));
 add_action('hejbit_SaveInProgress', array($save_to_nextcloud,'hejbit_SaveInProgress'));
 add_action('admin_post_ProgramSave', array($save_to_nextcloud,'hejbit_ProgramSave'));
@@ -680,7 +680,7 @@ function all_user_param() {
 
 add_action( 'rest_api_init', function () {
 	// Create the 'parameter' route in the API
-	register_rest_route("HWDB", 'param', array(
+	register_rest_route("HDB", 'param', array(
 	'methods' => 'GET',
 	'callback' => 'all_user_param',
 	'permission_callback' => '__return_true',
@@ -740,7 +740,7 @@ function get_all_saves() {
 // Create the action 'get_user_param'
 add_action( 'rest_api_init', function () {
 		// Create the "parameter" route in the API
-		register_rest_route("HWDB", 'saves', array(
+		register_rest_route("HDB", 'saves', array(
 		// GET Method
 		'methods' => 'GET',
 		// Call the method 'all_user_param'
