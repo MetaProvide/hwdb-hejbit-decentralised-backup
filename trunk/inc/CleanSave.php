@@ -7,6 +7,9 @@
 // Fixes a security issue mentioned in the email
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
+// Get the dynamic limit value from options and cast it to an integer
+$nb_save_limit = (int) get_option("nb_save_dlwcloud");
+
 // Prepare the SQL query to select the names of the backups to delete
 // Use $wpdb->prepare() to securely handle dynamic values
 $sql = $wpdb->prepare(
@@ -16,7 +19,7 @@ $sql = $wpdb->prepare(
      ORDER BY id_zip DESC 
      LIMIT %d, 10",
     1, // First placeholder: finish = 1
-    (int) get_option("nb_save_dlwcloud") // Second placeholder: dynamic limit value from options
+    $nb_save_limit // Second placeholder: dynamic limit value from options
 );
 
 // Execute the SQL query and get the results

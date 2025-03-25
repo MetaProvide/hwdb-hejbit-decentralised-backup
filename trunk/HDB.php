@@ -524,7 +524,10 @@ if ( get_option("auto_update_dlwcloud") == "true" ) {
 	global $wpdb;
 
 	// Last backup date
-	$sql = "SELECT name FROM " . $wpdb->prefix . "hejbit_saveInProgress ORDER BY id_zip DESC LIMIT 1";
+	$sql = $wpdb->prepare(
+		"SELECT name FROM {$wpdb->prefix}hejbit_saveInProgress ORDER BY id_zip DESC LIMIT %d",
+		1 // Placeholder para o valor do LIMIT
+	);
 	$lastSave = $wpdb->get_results($sql);
 
 	// Check if there are results
@@ -601,23 +604,36 @@ if (is_admin()){
 
 	// Declaration of admin settings
 	add_action( 'admin_init', 'hejbit_savetonextcloud_settings' );	
-	
+
 	function hejbit_savetonextcloud_settings() {
-		
-	  register_setting( 'nextcloud-group', 'url_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'login_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'pass_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'frequency_dlwcloud');
-	  register_setting( 'nextcloud-group', 'day_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'hour_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'folder_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'email_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'nb_save_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'auto_update_dlwcloud' );
-	  register_setting( 'nextcloud-group', 'db_only_dlwcloud' );
-	  
-	}	
-	
+    // Register the settings and sanitize the input data
+    register_setting( 'nextcloud-group', 'url_dlwcloud', 'sanitize_url_dlwcloud' );
+    register_setting( 'nextcloud-group', 'login_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'pass_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'frequency_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'day_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'hour_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'folder_dlwcloud', 'sanitize_text_field' );
+    register_setting( 'nextcloud-group', 'email_dlwcloud', 'sanitize_email' );
+    register_setting( 'nextcloud-group', 'nb_save_dlwcloud', 'absint' );
+    register_setting( 'nextcloud-group', 'auto_update_dlwcloud', 'filter_auto_update' );
+    register_setting( 'nextcloud-group', 'db_only_dlwcloud', 'filter_db_only' );
+	}
+
+	// Custom sanitization function for URL
+	function sanitize_url_dlwcloud($input) {
+    	return esc_url_raw($input); // Ensures the input is a valid URL
+	}
+
+	// Custom sanitization function for the auto_update field
+	function filter_auto_update($input) {
+    	return filter_var($input, FILTER_VALIDATE_BOOLEAN); // Ensures the input is a valid boolean
+	}
+
+	// Custom sanitization function for the db_only field
+	function filter_db_only($input) {
+    	return filter_var($input, FILTER_VALIDATE_BOOLEAN); // Ensures the input is a valid boolean
+	}
 	
 	function hejbit_notification() {
 		// Check if the settings were successfully updated
@@ -696,7 +712,9 @@ function get_all_saves() {
 	$result = array();
 
 	// Counts the number of backups
-	$sql = "SELECT * FROM " . $wpdb->prefix . "hejbit_saveInProgress";
+	$sql = $wpdb->prepare(
+		"SELECT * FROM {$wpdb->prefix}hejbit_saveInProgress"
+	);
 	
 	// Execute the query
 	$allSaves = $wpdb->get_results($sql);
