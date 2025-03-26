@@ -604,35 +604,21 @@ if (is_admin()){
 
 	// Declaration of admin settings
 	add_action( 'admin_init', 'hejbit_savetonextcloud_settings' );	
-
+	
 	function hejbit_savetonextcloud_settings() {
-    // Register the settings and sanitize the input data
-    register_setting( 'nextcloud-group', 'url_dlwcloud', 'sanitize_url_dlwcloud' );
-    register_setting( 'nextcloud-group', 'login_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'pass_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'frequency_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'day_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'hour_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'folder_dlwcloud', 'sanitize_text_field' );
-    register_setting( 'nextcloud-group', 'email_dlwcloud', 'sanitize_email' );
-    register_setting( 'nextcloud-group', 'nb_save_dlwcloud', 'absint' );
-    register_setting( 'nextcloud-group', 'auto_update_dlwcloud', 'filter_auto_update' );
-    register_setting( 'nextcloud-group', 'db_only_dlwcloud', 'filter_db_only' );
-	}
-
-	// Custom sanitization function for URL
-	function sanitize_url_dlwcloud($input) {
-    	return esc_url_raw($input); // Ensures the input is a valid URL
-	}
-
-	// Custom sanitization function for the auto_update field
-	function filter_auto_update($input) {
-    	return filter_var($input, FILTER_VALIDATE_BOOLEAN); // Ensures the input is a valid boolean
-	}
-
-	// Custom sanitization function for the db_only field
-	function filter_db_only($input) {
-    	return filter_var($input, FILTER_VALIDATE_BOOLEAN); // Ensures the input is a valid boolean
+		
+	  register_setting( 'nextcloud-group', 'url_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'login_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'pass_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'frequency_dlwcloud');
+	  register_setting( 'nextcloud-group', 'day_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'hour_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'folder_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'email_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'nb_save_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'auto_update_dlwcloud' );
+	  register_setting( 'nextcloud-group', 'db_only_dlwcloud' );
+	  
 	}
 	
 	function hejbit_notification() {
