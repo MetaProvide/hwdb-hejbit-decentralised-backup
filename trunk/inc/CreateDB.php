@@ -39,8 +39,13 @@ foreach ($OA_SQL as $thisDB) {
     // Fixes a security issue mentioned in the email
     if( !defined( 'ABSPATH' ) ){ exit(); }
 
-    // Retrieving all the tables from the database
-    $tables = $wpdb->get_col("SHOW TABLES LIKE '" . $thisDB['Prefix'] . "%'");
+    // Retrieving all the tables from the database using prepared SQL
+    $tables = $wpdb->get_col(
+        $wpdb->prepare(
+            "SHOW TABLES LIKE %s",
+            $thisDB['Prefix'] . '%'
+        )
+    );
 
     // Create the backup file
     $dbfile = ABSPATH . "hejbitSave_DB_" . $thisDB['NameApp'] . ".sql";
@@ -169,7 +174,12 @@ foreach ($OA_SQL as $thisDB) {
     if( !defined( 'ABSPATH' ) ){ exit(); }
 
     // Retrieving all the tables from the database
-    $tables = $wpdb->get_col("SHOW TABLES LIKE '" . $thisDB['Prefix'] . "%'");
+    $tables = $wpdb->get_col(
+        $wpdb->prepare(
+            "SHOW TABLES LIKE %s",
+            $thisDB['Prefix'] . '%'
+        )
+    );
 
     // Create the backup file
     $dbfile = ABSPATH . "hejbitSave_DB_" . $thisDB['NameApp'] . ".sql";

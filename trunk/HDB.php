@@ -68,8 +68,13 @@ class hejbit_save_to_nextcloud{
 		
 		// Delete the tables
 		global $wpdb;
-		$nameTable =$wpdb->prefix.'hejbit_saveInProgress';	
-		$wpdb->query( "DROP TABLE IF EXISTS $nameTable" );
+		$nameTable = 'hejbit_saveInProgress';
+		$wpdb->query(
+    		$wpdb->prepare(
+        		"DROP TABLE IF EXISTS %s",
+        		$wpdb->prefix . $nameTable
+    		)
+		);
 		
 		// Deletion of the options
 		$plugin_options = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%dlwcloud'");
@@ -88,8 +93,14 @@ class hejbit_save_to_nextcloud{
 
 		// Storing the backup 
 		$table_site=$wpdb->prefix."hejbit_saveInProgress";
-		$rows = $wpdb->get_row("SELECT * from $table_site WHERE finish = 0 ");
-		
+		$rows = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM %i WHERE finish = %d",
+				$table_site,
+				0
+			)
+		);
+
 		// If no backup is in progress, create a new backup
 		if ( empty( $rows->id_zip ) ) {
 										
@@ -524,11 +535,12 @@ if ( get_option("auto_update_dlwcloud") == "true" ) {
 	global $wpdb;
 
 	// Last backup date
-	$sql = $wpdb->prepare(
-		"SELECT name FROM {$wpdb->prefix}hejbit_saveInProgress ORDER BY id_zip DESC LIMIT %d",
-		1 // Placeholder para o valor do LIMIT
+	$lastSave = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT name FROM {$wpdb->prefix}hejbit_saveInProgress ORDER BY id_zip DESC LIMIT %d",
+			1 // Placeholder for the LIMIT value
+		)
 	);
-	$lastSave = $wpdb->get_results($sql);
 
 	// Check if there are results
 	if ($lastSave) {
@@ -711,13 +723,12 @@ function get_all_saves() {
 	// Initialize the array to store the results
 	$result = array();
 
-	// Counts the number of backups
-	$sql = $wpdb->prepare(
-		"SELECT * FROM {$wpdb->prefix}hejbit_saveInProgress"
-	);
-	
-	// Execute the query
-	$allSaves = $wpdb->get_results($sql);
+	// Execute the query to retrieve all backups
+    $allSaves = $wpdb->get_results(
+        "SELECT * FROM {$wpdb->prefix}hejbit_saveInProgress"
+    );
+    
+    return $allSaves;
 	
 	// Add the number of backups to the result
 	$result["nbSaves"] = count($allSaves);
