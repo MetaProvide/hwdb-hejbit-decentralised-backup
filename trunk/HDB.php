@@ -651,11 +651,26 @@ if (is_admin()){
 		// Check if the settings were successfully updated
 		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
 			
-			$timestamp = wp_next_scheduled('hejbit_Save','next');
-			$date_format = 'j F Y, H:i'; // Custom date format
-			$formatted_date = date_i18n($date_format, $timestamp);			
-
-			$notif = "Your next backup is scheduled for the ".$formatted_date.". If you haven't done so yet, click the \"Backup Now\" button to avoid waiting.";
+			// Retrieve the user's configured day and hour settings for the backup
+			$day = get_option('day_dlwcloud');  // Get the day set by the user (e.g., Monday)
+			$hour = get_option('hour_dlwcloud');  // Get the hour set by the user (e.g., 14 for 2 PM)
+			
+			// Generate the timestamp for the next backup based on the user's settings
+			$next_backup_time = strtotime("next {$day} {$hour}:00");
+	
+			// Check if the timestamp was successfully generated
+			if ($next_backup_time === false) {
+				$notif = "There was an error calculating the next backup time. Please check your settings.";
+			} else {
+				// Format the date using a custom date format
+				$date_format = 'j F Y, H:i'; // Custom date format (e.g., 27 March 2025, 14:00)
+				$formatted_date = date_i18n($date_format, $next_backup_time);
+	
+				// Prepare the notification message with the next backup date and time
+				$notif = "Your next backup is scheduled for the {$formatted_date}. If you haven't done so yet, click the \"Backup Now\" button to avoid waiting.";
+			}
+	
+			// Add the success message to the settings page
 			add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
         
 		}else if(isset($_GET['save'])){

@@ -69,3 +69,7 @@ Temporary Solution: The "Make a Backup Now" button should only be clicked after 
 Feature: Field Changes Not Recognized
 Description: If you fill in any fields and click "Save the Schedule", but then modify a field afterward, the system does not recognize the new values. 
 Temporary Solution: The user must always click "Save the Schedule" after any field modification.
+
+Feature: Unable to Schedule Backup for the Current Day
+Description: It is currently not possible to schedule a backup for the same day.
+Temporary Solution: If you need to perform a backup immediately, please click on "Make a Backup Now."
