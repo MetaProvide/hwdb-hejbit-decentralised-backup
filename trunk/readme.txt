@@ -8,7 +8,7 @@ License: AGPLv3 or later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
 Tags: hejbit, nextcloud, webdav, backup, decentralised
 
-A simple tool to backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
+Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
 
 == Description ==
 

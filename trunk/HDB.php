@@ -1,20 +1,19 @@
 <?php 
+/**
+ * Plugin Name: HejBit Decentralised Backup
+ * Plugin URI: https://app.hejbit.com/
+ * Description: Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
+ * Requires at least: 6.7
+ * Requires PHP: 8.2.28
+ * Version: 1.0.0
+ * Author: Hejbit
+ * License: AGPLv3 or later
+ * License URI: https://www.gnu.org/licenses/agpl-3.0.html
+ * Network: True
+*/
 
 // Fixes a security issue mentioned in the email
 if( !defined( 'ABSPATH' ) ){ exit(); }
-
-/*
-Plugin Name: HejBit Decentralised Backup
-Plugin URI: https://app.hejbit.com/
-Description: Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
-Version: 1.0.0
-Author: Hejbit
-Author URI: https://app.hejbit.com
-License: AGPLv3 or later
-License URI: https://www.gnu.org/licenses/agpl-3.0.html
-Network: True
-Contributors: João Raposo <metajoao@metaprovide.org>
-*/
 
 // Main folder of the plugin
 define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hdb-hejbit-decentralised-backup/");
