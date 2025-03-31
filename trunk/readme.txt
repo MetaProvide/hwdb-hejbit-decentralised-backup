@@ -1,18 +1,14 @@
 === HejBit Decentralised Backup ===
+
 Contributors: app.hejbit.com , metaprovide.org
-Tags: hejbit, nextcloud, webdav, backup, decentralised
-Requires at least: 6.7
-Requires PHP: 7.3
 Tested up to: 6.7.2
 Stable tag: 1.0.0
+Requires PHP: 8.2.28
 License: AGPLv3 or later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
-
-
-== Short Description ==
+Tags: hejbit, nextcloud, webdav, backup, decentralised
 
 A simple tool to backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
-
 
 == Description ==
 
@@ -27,8 +23,20 @@ WARNING: Automatic restoration of backups is not yet possible. It must be done m
 
 == Installation ==
 
-Install HejBit Decentralised Backup from the Wordpress store and activate it
-Configure the settings in the menu 'Save To Nextcloud' -> 'Backup'
+= Installation from within WordPress =
+
+1. Visit **Plugins > Add New**.
+2. Search for **HejBit Decentralised Backup**.
+3. Install and activate the HejBit Decentralised Backup plugin.
+
+= Manual installation =
+
+1. Upload the entire `hdb-hejbit-decentralised-backup` folder to the `/wp-content/plugins/` directory.
+2. Visit **Plugins**.
+3. Activate the HejBit Decentralised Backup plugin.
+
+= Configure the settings =
+Configure the settings in the menu **HejBit Decentralised Backup > Backup**.
 
 The "Save schedule" button schedules your next backup.
 The "Make a backup now" button starts the backup
