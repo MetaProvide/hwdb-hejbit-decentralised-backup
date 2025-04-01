@@ -283,6 +283,12 @@ Please ensure that your backup folder is obtained directly from your web server 
 	// Scheduling the instant backup
 	static function hejbit_Save($next=null){
 		
+		// Verify nonce for direct backups
+		if (!$next && (!isset($_POST['hejbit_save_now_nonce']) || 
+        	!wp_verify_nonce($_POST['hejbit_save_now_nonce'], 'hejbit_save_now_action'))) {
+        	wp_die('Security check failed');
+    	}
+
 		// Clean
 		global $wpdb;
 		$wpdb->delete( $wpdb->prefix.'hejbit_saveInProgress', array("finish" => "0" ) );
@@ -298,20 +304,33 @@ Please ensure that your backup folder is obtained directly from your web server 
 		};
 		
 		// Direct launch
+		// When redirecting, include a nonce in the URL
 		if ( !$next ){
 
+			// Creating a nonce for the action
+			$nonce = wp_create_nonce('hejbit_save_action');
+			
 			// Redirecting to admin page
 			if(is_multisite()){
-				// Redirects to the page
-				wp_redirect('/wp-admin/network/admin.php?page=hejbit_decentralised-backup&save=now');
-			}
+				wp_redirect(add_query_arg(
+					array(
+						'page' => 'hejbit_decentralised-backup',
+						'save' => 'now',
+						'_wpnonce' => $nonce
+					),
+					network_admin_url('admin.php')
+				));
 			// If we are on a standard site
-			else{
-				// Redirects to the page
-				wp_redirect('/wp-admin/admin.php?page=hejbit_decentralised-backup&save=now');
-
-			}
-			
+			} else {
+            	wp_redirect(add_query_arg(
+                	array(
+                    	'page' => 'hejbit_decentralised-backup',
+                    	'save' => 'now',
+                    	'_wpnonce' => $nonce
+                	),
+                	admin_url('admin.php')
+            	));
+        	}
 		// Scheduled launch
 		}else{
 			
@@ -672,12 +691,18 @@ if (is_admin()){
 			// Add the success message to the settings page
 			add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
         
-		}else if(isset($_GET['save'])){
+		}
+		// For backup initiated notification
+		else if (isset($_GET['save']) && isset($_GET['_wpnonce'])) {
+			// Sanitize and unslash the nonce value
+			$nonce = sanitize_text_field(wp_unslash($_GET['_wpnonce']));
 			
-			$notif = "The backup is in progress, this may take a few minutes. You will receive an email once it is complete.";
-			add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
-
-		};
+			// Verify the nonce
+			if (wp_verify_nonce($nonce, 'hejbit_save_action')) {
+				$notif = "The backup is in progress, this may take a few minutes. You will receive an email once it is complete.";
+				add_settings_error('hejbit', 'hejbit_success', $notif, 'updated-nag');
+			}
+		}
 	}
 	// add_action('admin_notices', 'hejbit_notification');
 	add_action('admin_init', 'hejbit_notification');
@@ -920,15 +945,17 @@ function hejbit_savetonextcloud_param(){?>
 
 		</table>
 		<?php
-		// If we are saving new options
-		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == true) {
+		// If we are saving new options 
+		// We check if the settings were updated successfully and if the nonce is valid
+		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == true && check_admin_referer('hejbit-settings-options')) {
 			// Schedule the next backup
-			hejbit_save_to_nextcloud::hejbit_ProgramSave();
+			hejbit_save_to_nextcloud::hejbit_programSave();
 		}
 		submit_button("Save the schedule"); ?>
 	</form>
 	<form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
 		<input type="hidden" name="action" value="saveNow">
+		<?php wp_nonce_field('hejbit_save_now_action', 'hejbit_save_now_nonce'); ?>
 		<?php submit_button('Make a backup now');?>
 	</form>		
 	<p>
