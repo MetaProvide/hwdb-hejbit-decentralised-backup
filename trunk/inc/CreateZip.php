@@ -3,6 +3,11 @@
 /**
 	Creation of partial Zip files for HejBit Decentralised Backup.
 **/
+
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Listing of files to back up with exclusion of cache folders
@@ -107,4 +112,6 @@ $wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish
 
 // Launch the next step
 wp_schedule_single_event(time(),'hejbit_SaveInProgress');
+
+// phpcs:enable WordPress.DB
 ?>

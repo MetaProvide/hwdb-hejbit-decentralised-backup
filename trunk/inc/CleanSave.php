@@ -4,7 +4,10 @@
 	Cleaning up obsolete backups for HejBit Decentralised Backup.
 **/
 
-// Fixes a security issue mentioned in the email
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Get the dynamic limit value from options and cast it to an integer
@@ -72,4 +75,6 @@ $filesInFtp = glob(ABSPATH . "hejbitSave_*");
 foreach ($filesInFtp as $file) { 
     wp_delete_file($file);
 }
+
+// phpcs:enable WordPress.DB
 ?>

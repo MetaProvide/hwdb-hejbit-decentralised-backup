@@ -4,7 +4,10 @@
     This file is used to create a file on the FTP containing the database script for HejBit Decentralised Backup.
 **/
 
-// Fixes a security issue mentioned in the email
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Load the WordPress filesystem
@@ -131,4 +134,5 @@ $wpdb->update($wpdb->prefix . 'hejbit_saveInProgress', $datafinish, $wherefinish
 // Launch the next step
 wp_schedule_single_event(time(), 'hejbit_SaveInProgress');
 
+// phpcs:enable WordPress.DB
 ?>

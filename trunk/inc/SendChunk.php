@@ -4,7 +4,10 @@
     This file allows sending file chunks to NextCloud for HejBit Decentralised Backup.
 **/
 
- // Fix a security issue mentioned in the email
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Initialize WP_Filesystem
@@ -100,4 +103,6 @@ if ( !empty( $thisChunk ) ){
 
 // Start the next step if no chunk was read
 wp_schedule_single_event(time(),'hejbit_SaveInProgress');
+
+// phpcs:enable WordPress.DB
 ?>

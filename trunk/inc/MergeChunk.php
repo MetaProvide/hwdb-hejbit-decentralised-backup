@@ -4,8 +4,11 @@
 	The query gathers all the pieces of the tar (chunks) into a tar file in NextCloud for HejBit Decentralised Backup.
 **/ 
 
-// Fix a security issue mentioned in the email
-if(!defined( 'ABSPATH' )){exit();}
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
+if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Check the destination folder
 // Retrieves the folders from the path into an array
@@ -112,4 +115,5 @@ $this->sendInfo("SUCCESS",$info);
 // Cleaning up the backups
 include ('CleanSave.php');
 
+// phpcs:enable WordPress.DB
 ?>

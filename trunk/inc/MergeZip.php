@@ -4,6 +4,10 @@
 	Merge the files to be backed up into a single Zip for HejBit Decentralised Backup.
 **/
 
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Create the Zip archive
@@ -56,4 +60,5 @@ $wpdb->update( $wpdb->prefix.'hejbit_saveInProgress' , $datafinish, $wherefinish
 // Schedule the next step of the backup process
 wp_schedule_single_event(time(),'hejbit_SaveInProgress');
 
+// phpcs:enable WordPress.DB
 ?>

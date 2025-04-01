@@ -12,7 +12,10 @@
  * Network: True
 */
 
-// Fixes a security issue mentioned in the email
+// Custom tables used exclusively by this plugin and for infrequent operations (backup)
+// phpcs:disable WordPress.DB
+
+// Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Main folder of the plugin
@@ -825,7 +828,7 @@ add_action( 'rest_api_init', function () {
 	) );
 } );
 
-
+// phpcs:enable WordPress.DB
 
 // Admin page
 function hejbit_savetonextcloud_param(){?>
