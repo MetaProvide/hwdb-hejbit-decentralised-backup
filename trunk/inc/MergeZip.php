@@ -29,11 +29,14 @@ foreach ($sqlFiles as $sqlFile) {
 };
 
 // Add config file for WordPress only if database-only mode is not active
-if( get_option("db_only_dlwcloud") !== "true"){
-	
-	$zipMerge->addFile(ABSPATH . "wp-config.php", "wordpress/wp-config.php");
-	$zipMerge->addFile(ABSPATH . ".htaccess", "wordpress/.htaccess");
-
+if(get_option("db_only_dlwcloud") !== "true"){
+    
+    $zipMerge->addFile(ABSPATH . "wp-config.php", "wordpress/wp-config.php");
+    
+    // Check if .htaccess exists before trying to add it
+    if(file_exists(ABSPATH . ".htaccess")) {
+        $zipMerge->addFile(ABSPATH . ".htaccess", "wordpress/.htaccess");
+    }
 };
 
 $zipMerge->close();

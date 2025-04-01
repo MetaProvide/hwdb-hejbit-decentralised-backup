@@ -284,10 +284,18 @@ Please ensure that your backup folder is obtained directly from your web server 
 	static function hejbit_Save($next=null){
 		
 		// Verify nonce for direct backups
-		if (!$next && (!isset($_POST['hejbit_save_now_nonce']) || 
-        	!wp_verify_nonce($_POST['hejbit_save_now_nonce'], 'hejbit_save_now_action'))) {
-        	wp_die('Security check failed');
-    	}
+		if (!$next) {
+			if (!isset($_POST['hejbit_save_now_nonce'])) {
+				wp_die('Security check failed: Nonce is missing');
+			}
+			
+			// Properly unslash and sanitize the nonce before verification
+			$nonce = sanitize_text_field(wp_unslash($_POST['hejbit_save_now_nonce']));
+			
+			if (!wp_verify_nonce($nonce, 'hejbit_save_now_action')) {
+				wp_die('Security check failed: Invalid nonce');
+			}
+		}
 
 		// Clean
 		global $wpdb;
