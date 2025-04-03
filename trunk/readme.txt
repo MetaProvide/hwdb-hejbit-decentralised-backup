@@ -45,7 +45,13 @@ Advanced options:
 - Set the number of backups to keep (up to 10)
 - Enable automatic update blocking: the core, plugins and themes being tagged to be updated automatically, will only be updated after a scheduled backup in order to prevent it from being polluted by a faulty plugin. Manual updates are still possible.
 
-Several steps are required, and each step depends on the maximum memory allocated by your hosting. As a result, the process may take a long time (a few hours for a 10GB site with 64MB of memory):
+= Process Duration =
+Several steps are required, and each step depends on the maximum memory allocated by your hosting. As a result, the process may take a long time (e.g., a few hours for a 10GB site with 64MB of memory).
+
+= Backup File Limit =
+Currently, the maximum limit for saving the backup ZIP file in Swarm is 1GB.
+
+= Backup Process =
 
 1- DB extraction
 2- Zip of the wp-content folder
