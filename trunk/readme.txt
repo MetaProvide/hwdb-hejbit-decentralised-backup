@@ -49,7 +49,7 @@ Advanced options:
 Several steps are required, and each step depends on the maximum memory allocated by your hosting. As a result, the process may take a long time (e.g., a few hours for a 10GB site with 64MB of memory).
 
 = Backup File Limit =
-Currently, the maximum limit for saving the backup ZIP file in Swarm is 1GB.
+Currently, the maximum limit for saving the backup ZIP file in Swarm is around 1GB.
 
 = Backup Process =
 
