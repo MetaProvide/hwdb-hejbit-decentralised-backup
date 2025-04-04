@@ -1,7 +1,7 @@
 <?php 
 /**
  * Plugin Name: HejBit Decentralised Backup
- * Plugin URI: https://app.hejbit.com/
+ * Plugin URI: https://metaprovide.org/hejbit/
  * Description: Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
  * Requires at least: 6.7
  * Requires PHP: 8.2.28

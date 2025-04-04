@@ -1,6 +1,6 @@
 === HejBit Decentralised Backup ===
 
-Contributors: app.hejbit.com , metaprovide.org
+Contributors: joaosraposo, app.hejbit.com , metaprovide.org
 Tested up to: 6.7.2
 Stable tag: 1.0.0
 Requires PHP: 8.2.28
