@@ -2,7 +2,7 @@
 /**
  * Plugin Name: HejBit Decentralised Backup
  * Plugin URI: https://metaprovide.org/hejbit/
- * Description: BSecurely back up your WordPress site to decentralized storage via Nextcloud and HejBit.
+ * Description: Securely back up your WordPress site to decentralized storage via Nextcloud and HejBit.
  * Requires at least: 6.7
  * Requires PHP: 8.2.28
  * Version: 1.0.2
