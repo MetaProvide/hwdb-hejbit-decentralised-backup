@@ -2,12 +2,12 @@
 /**
  * Plugin Name: HejBit Decentralised Backup
  * Plugin URI: https://metaprovide.org/hejbit/
- * Description: Backup your WordPress site and database to your Hejbit Swarm Folder on Nextcloud.
+ * Description: BSecurely back up your WordPress site to decentralized storage via Nextcloud and HejBit.
  * Requires at least: 6.7
  * Requires PHP: 8.2.28
- * Version: 1.0.0
- * Author: Hejbit
- * License: AGPLv3 or later
+ * Version: 1.0.2
+ * Author: Hejbit, Joaosraposo
+ * License: AGPLv3
  * License URI: https://www.gnu.org/licenses/agpl-3.0.html
  * Network: True
 */
