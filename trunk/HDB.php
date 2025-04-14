@@ -587,7 +587,6 @@ if (is_admin()){
     register_setting( 'nextcloud-group', 'hour_dlwcloud', 'sanitize_text_field' );
     register_setting( 'nextcloud-group', 'folder_dlwcloud', 'sanitize_text_field' );
     register_setting( 'nextcloud-group', 'email_dlwcloud', 'sanitize_email' );
-    register_setting( 'nextcloud-group', 'nb_save_dlwcloud', 'absint' );
     register_setting( 'nextcloud-group', 'db_only_dlwcloud', 'filter_db_only' );
 	}
 
@@ -657,7 +656,7 @@ if (is_admin()){
  */
 
 function all_user_param() {
-	$nameParam = array("frequency_dlwcloud", "day_dlwcloud", "hour_dlwcloud", "nb_save_dlwcloud");
+	$nameParam = array("frequency_dlwcloud", "day_dlwcloud", "hour_dlwcloud");
 	
 	$allParam = array();
 	
@@ -842,20 +841,8 @@ function hejbit_savetonextcloud_param(){?>
 				<summary>View advanced settings</summary>
 				<table class="form-table"> 
 
-					<th scope="row" style="width:350px;">Number of backups to keep on server</th>
-					<td>
-					<select name="nb_save_dlwcloud">
-						<option value="1" <?php if(get_option('nb_save_dlwcloud') == "1"){ ?> selected <?php } ?>>1</option>
-						<option value="2" <?php if(get_option('nb_save_dlwcloud') == "2"){ ?> selected <?php } ?>>2</option>
-						<option value="3" <?php if(empty(get_option('day_dlwcloud')) || get_option('nb_save_dlwcloud') == "3"){ ?> selected <?php } ?>>3</option>
-						<option value="4" <?php if(get_option('nb_save_dlwcloud') == "4"){ ?> selected <?php } ?>>4</option>
-						<option value="5" <?php if(get_option('nb_save_dlwcloud') == "5"){ ?> selected <?php } ?>>5</option>
-						<option value="6" <?php if(get_option('nb_save_dlwcloud') == "6"){ ?> selected <?php } ?>>6</option>
-						<option value="7" <?php if(get_option('nb_save_dlwcloud') == "7"){ ?> selected <?php } ?>>7</option>
-						<option value="8" <?php if(get_option('nb_save_dlwcloud') == "8"){ ?> selected <?php } ?>>8</option>
-						<option value="9" <?php if(get_option('nb_save_dlwcloud') == "9"){ ?> selected <?php } ?>>9</option>
-						<option value="10" <?php if(get_option('nb_save_dlwcloud') == "10"){ ?> selected <?php } ?>>10</option>
-					</select></td>
+					
+					
 					</tr>
 					<th scope="row" style="width:350px;">Do you want to backup only the database(s)?</th>
 					<td><select name="db_only_dlwcloud">
