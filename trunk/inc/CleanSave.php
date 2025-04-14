@@ -69,9 +69,11 @@ foreach ($result as $save) {
         array("id_zip" => $save->id_zip)
     );
 }
+$upload_dir = wp_upload_dir();
+$hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
 
 // Cleaning residual files (if they exist)
-$filesInFtp = glob(ABSPATH . "hejbitSave_*");
+$filesInFtp = glob($hejbit_upload_dir . "hejbitSave_*");
 foreach ($filesInFtp as $file) { 
     wp_delete_file($file);
 }

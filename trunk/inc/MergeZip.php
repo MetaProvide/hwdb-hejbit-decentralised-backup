@@ -13,18 +13,21 @@ if( !defined( 'ABSPATH' ) ){ exit(); }
 // Create the Zip archive
 $zipMerge = new ZipArchive();
 
-if ( !file_exists( ABSPATH . "hejbitSave_final.zip" ) ){
+$upload_dir = wp_upload_dir();
+$hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+
+if ( !file_exists( $hejbit_upload_dir . "hejbitSave_final.zip" ) ){
 	
-	$zipMerge->open(ABSPATH . "hejbitSave_final.zip", ZipArchive::CREATE);
+	$zipMerge->open($hejbit_upload_dir . "hejbitSave_final.zip", ZipArchive::CREATE);
 	
 }else{
 	
-	$zipMerge->open(ABSPATH . "hejbitSave_final.zip");
+	$zipMerge->open($hejbit_upload_dir . "hejbitSave_final.zip");
 
 };
 
 // Add additional files to the Zip archive
-$sqlFiles = glob(ABSPATH . "*.sql");
+$sqlFiles = glob($hejbit_upload_dir . "*.sql");
 
 // SQL addition loop, used for OthersApps
 foreach ($sqlFiles as $sqlFile) {

@@ -19,8 +19,11 @@ WP_Filesystem();
 // Use the global $wp_filesystem object
 global $wp_filesystem;
 
+$upload_dir = wp_upload_dir();
+$hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+
 // File path
-$file_path = ABSPATH . "hejbitSave_final.zip";
+$file_path = $hejbit_upload_dir . "hejbitSave_final.zip";
 
 // Check if file exists
 if ( ! $wp_filesystem->exists( $file_path ) ) {

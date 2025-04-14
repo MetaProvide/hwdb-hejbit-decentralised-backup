@@ -293,7 +293,9 @@ Please ensure that your backup folder is obtained directly from your web server 
 		// Clean
 		global $wpdb;
 		$wpdb->delete( $wpdb->prefix.'hejbit_saveInProgress', array("finish" => "0" ) );
-		$filesInFtp = glob(ABSPATH . "hejbitSave_*");
+		$upload_dir = wp_upload_dir();
+		$hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+		$filesInFtp = glob($hejbit_upload_dir . "hejbitSave_*");
 		foreach($filesInFtp as $file){ 	wp_delete_file($file);	};	
 		
 

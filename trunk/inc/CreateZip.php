@@ -29,13 +29,18 @@ $size = 0;
 // Zip creation
 $zip = new ZipArchive();
 
-if ( !file_exists( ABSPATH . "hejbitSave_final.zip" ) ){
+$upload_dir = wp_upload_dir();
+$hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+
+
+
+if ( !file_exists( $hejbit_upload_dir . "hejbitSave_final.zip" ) ){
 	
-	$zip->open(ABSPATH . "hejbitSave_final.zip", ZipArchive::CREATE);
+	$zip->open($hejbit_upload_dir . "hejbitSave_final.zip", ZipArchive::CREATE);
 	
 }else{
 	
-	$zip->open(ABSPATH . "hejbitSave_final.zip");
+	$zip->open($hejbit_upload_dir . "hejbitSave_final.zip");
 
 };
 

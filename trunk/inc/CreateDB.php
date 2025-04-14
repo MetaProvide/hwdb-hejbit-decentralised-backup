@@ -51,8 +51,17 @@ foreach ($OA_SQL as $thisDB) {
     );
 
     // Create the backup file
-    $dbfile = ABSPATH . "hejbitSave_DB_" . $thisDB['NameApp'] . ".sql";
-
+    $upload_dir = wp_upload_dir();
+    $hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+    // Create directory if it doesn't exist
+    if (!file_exists($hejbit_upload_dir)) {
+        wp_mkdir_p($hejbit_upload_dir);
+    }
+    // Add .htaccess to prevent direct access
+    if (!file_exists($hejbit_upload_dir . '.htaccess')) {
+        $wp_filesystem->put_contents($hejbit_upload_dir . '.htaccess', 'Deny from all', FS_CHMOD_FILE);
+    }
+    $dbfile = $hejbit_upload_dir . "hejbitSave_DB_" . $thisDB['NameApp'] . ".sql";
     // Open the file using WP_Filesystem
     $file_handle = $wp_filesystem->put_contents($dbfile, '', FS_CHMOD_FILE);
 
