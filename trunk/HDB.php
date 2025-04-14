@@ -544,64 +544,7 @@ add_action('admin_post_saveNow',array($save_to_nextcloud,'hejbit_Save'));
 // Activation of auto updates for WP
 $next_event_timestamp = wp_next_scheduled('hejbit_SaveInProgress');
 
-// If the option to manage auto updates is enabled
-if ( get_option("auto_update_dlwcloud") == "true" ) {
-	
-	global $wpdb;
 
-	// Last backup date
-	$lastSave = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT name FROM {$wpdb->prefix}hejbit_saveInProgress ORDER BY id_zip DESC LIMIT %d",
-			1 // Placeholder for the LIMIT value
-		)
-	);
-
-	// Check if there are results
-	if ($lastSave) {
-		// Extract the last saved date from the result
-		$date_str = $lastSave[0]->name;
-		
-        if (!empty($date_str)){
-			// Extract the last 14 characters (assuming the date format is consistent)
-			$date_substr = substr($date_str, -14, 14);
-
-			// Extract date components
-			$year = substr($date_substr, 0, 4);
-			$month = substr($date_substr, 4, 2);
-			$day = substr($date_substr, 6, 2);
-			$hour = substr($date_substr, 8, 2);
-			$minute = substr($date_substr, 10, 2);
-			$second = substr($date_substr, 12, 2);
-
-			// Calculate the difference between the current date and the last save date
-			$last_save_date = new DateTime("$year-$month-$day $hour:$minute:$second");
-			$current_date = new DateTime();
-			$date_diff = $current_date->diff($last_save_date);
-		
-			// Check if the difference is less than two days
-			if ($date_diff->days < 2) {
-				add_filter('auto_update_core', '__return_true');
-				add_filter('auto_update_theme', '__return_true');
-				add_filter('auto_update_plugin', '__return_true');
-				add_filter('auto_update_translation', '__return_true');
-			} else {
-				add_filter('auto_update_core', '__return_false');
-				add_filter('auto_update_theme', '__return_false');
-				add_filter('auto_update_plugin', '__return_false');
-				add_filter('auto_update_translation', '__return_false');
-			}
-		}else{
-			// Backup in progress, no auto-update
-			add_filter('auto_update_core', '__return_false');
-			add_filter('auto_update_theme', '__return_false');
-			add_filter('auto_update_plugin', '__return_false');
-			add_filter('auto_update_translation', '__return_false');			
-		}
-		
-		
-	}
-};
 
 // Administration menu
 if (is_admin()){ 
@@ -643,7 +586,6 @@ if (is_admin()){
     register_setting( 'nextcloud-group', 'folder_dlwcloud', 'sanitize_text_field' );
     register_setting( 'nextcloud-group', 'email_dlwcloud', 'sanitize_email' );
     register_setting( 'nextcloud-group', 'nb_save_dlwcloud', 'absint' );
-    register_setting( 'nextcloud-group', 'auto_update_dlwcloud', 'filter_auto_update' );
     register_setting( 'nextcloud-group', 'db_only_dlwcloud', 'filter_db_only' );
 	}
 
@@ -913,19 +855,6 @@ function hejbit_savetonextcloud_param(){?>
 						<option value="10" <?php if(get_option('nb_save_dlwcloud') == "10"){ ?> selected <?php } ?>>10</option>
 					</select></td>
 					</tr>
-
-					<th scope="row" style="width:350px;">Do you want to enable your automatic updates only after a backup?</th>
-					<td><select name="auto_update_dlwcloud">
-					<option value="true" <?php if(get_option('auto_update_dlwcloud') == "true"){ ?> selected <?php } ?>>yes
-					</option>
-					<option value="false" <?php if(empty(get_option('auto_update_dlwcloud')) || 
-					get_option('auto_update_dlwcloud') == "false"){ ?> selected <?php } ?>>No</option>					
-					</select>
-					</br><p>For the proper functioning of your site, updates should only be performed after a full backup.
-					If you enable this option, plugins, core and themes will be updated automatically only after the saved schedule.
-					In case of problems, you can therefore restore the last backup of your site.</p>
-					</tr> 
-
 					<th scope="row" style="width:350px;">Do you want to backup only the database(s)?</th>
 					<td><select name="db_only_dlwcloud">
 					<option value="true" <?php if(get_option('db_only_dlwcloud') == "true"){ ?> selected <?php } ?>>Yes
