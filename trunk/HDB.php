@@ -133,31 +133,41 @@ class hejbit_save_to_nextcloud{
 				          	    
 	          	    
 			case "0":
+				error_log('DB-Exporting-BEGIN');
 				// Export of the DB
 				include ('inc/CreateDB.php');
+				error_log('DB-Exporting-END');	
 				// End of the script before relaunch by cron to avoid timeout
 				exit();
 
 			
 			
 			case "1":
+				error_log('ZIP-Creation-BEGIN');	
 				// Creation of the Zip
 				include ('inc/CreateZip.php');
+				error_log('ZIP-Creation-END');	
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
 			
 			case "2":
+				error_log('Merging-ZIP-BEGIN');
 				// Merging the files to be backed up
 				include ('inc/MergeZip.php');
+				error_log('Merging-ZIP-END');
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
 			
 			case "3":
+				error_log('Sending-Chunk-BEGIN');
+
 				$nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
 				$hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
-			
+				
+				error_log('Nextcloud status: ' . ($nc_status ? 'active' : 'inactive'));
+				error_log('Hejbit folder status: ' . ($hejbit_folder ? 'exists' : 'does not exist'));
 
 				
 				
@@ -231,10 +241,14 @@ Please ensure that your backup folder is obtained directly from your web server 
 				
 					$this->sendInfo("ERROR",$info);								
 					
-				};			
+				};	
+				error_log('Sending-Chunk-END');
+		
 			exit();
 			
 			case "4":
+				error_log('MergingChunk-BEGIN');
+
 				// If the connection with NextCloud is correct
 				if(hejbit_save_to_nextcloud::is_NextCloud_good()){
 					
@@ -266,7 +280,9 @@ Please ensure that your backup folder is obtained directly from your web server 
 					}
 					
 
-				};				
+				};		
+				error_log('MergingChunk-END');		
+		
 			exit();					
 
 		};
@@ -391,6 +407,8 @@ Please ensure that your backup folder is obtained directly from your web server 
 	static function is_Folder_hejbit(){
 		
 		$url = get_option('url_dlwcloud').'/remote.php/dav/files/'. get_option("login_dlwcloud").get_option("folder_dlwcloud");
+		error_log('$url: ' . $url);
+
 		$headers = array(
 			'Content-Type' => 'application/xml',
 			'Depth' => '0',  // Important: this limits to only the root folder
@@ -425,11 +443,15 @@ Please ensure that your backup folder is obtained directly from your web server 
 	}
 	
 	static function check_ethswarm_node_status($xml_response) {
+		error_log('Full XML response: ' . print_r($xml_response, true));
+
 		// Extract the body from the WordPress response array
 		$body = wp_remote_retrieve_body($xml_response);
 
 		// Check if we got a valid body
 		if (empty($body)) {
+			error_log('Empty response body from Nextcloud');
+
 			return false;
 		}
 		
@@ -441,6 +463,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 		if ($xml === false) {
 			$errors = libxml_get_errors();
 			foreach ($errors as $error) {
+				error_log('XML parsing error: ' . $error->message);
 			}
 			libxml_clear_errors();
 			return false;
