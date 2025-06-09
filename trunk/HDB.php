@@ -443,15 +443,14 @@ Please ensure that your backup folder is obtained directly from your web server 
 	}
 	
 	static function check_ethswarm_node_status($xml_response) {
-		error_log('Full XML response: ' . print_r($xml_response, true));
-
+		error_log('Response code: ' . wp_remote_retrieve_response_code($xml_response));
+		
 		// Extract the body from the WordPress response array
 		$body = wp_remote_retrieve_body($xml_response);
 
 		// Check if we got a valid body
 		if (empty($body)) {
 			error_log('Empty response body from Nextcloud');
-
 			return false;
 		}
 		
@@ -478,14 +477,20 @@ Please ensure that your backup folder is obtained directly from your web server 
 		
 		// Check if element exists and its value
 		if (count($nodes) > 0) {
-			$value = (string)$nodes[0];
-			return strtolower($value) === 'true';
+			$value = trim((string)$nodes[0]);
+			error_log('ethswarm-node value: "' . $value . '"');
+			
+			// Accept both "1" and "true" as valid values
+			$is_swarm = (strtolower($value) === 'true' || $value === '1');
+			error_log('Is Swarm folder: ' . ($is_swarm ? 'YES' : 'NO'));
+			
+			return $is_swarm;
 		}
 		
 		// Element not found
+		error_log('ethswarm-node element not found in XML');
 		return false;
-	}
-	
+	}	
 	
 	// Scheduled backup
 	static function hejbit_programSave(){
