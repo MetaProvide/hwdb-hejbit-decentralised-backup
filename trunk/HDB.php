@@ -562,7 +562,7 @@ register_activation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextclou
 register_deactivation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextcloud,'desactivate'));
 add_action('hejbit_Save', array($save_to_nextcloud,'hejbit_Save'));
 add_action('hejbit_SaveInProgress', array($save_to_nextcloud,'hejbit_SaveInProgress'));
-add_action('admin_post_ProgramSave', array($save_to_nextcloud,'hejbit_ProgramSave'));
+// add_action('admin_post_ProgramSave', array($save_to_nextcloud,'hejbit_ProgramSave'));
 add_action('admin_post_saveNow',array($save_to_nextcloud,'hejbit_Save'));
 
 
@@ -855,7 +855,6 @@ function hejbit_savetonextcloud_param(){?>
 	<h2>Backup</h2>
 	<p>Please fill in your settings</p>
 	<form method="post" action="<?php echo esc_url(admin_url('options.php')); ?>">
-		<input type="hidden" name="action" value="ProgramSave">
 		<?php 
 		settings_fields( 'nextcloud-group' );
 		do_settings_fields( 'nextcloud-group','dlwcloud' );?>
@@ -950,8 +949,8 @@ function hejbit_savetonextcloud_param(){?>
 		<?php
 		// If we are saving new options 
 		// We check if the settings were updated successfully and if the nonce is valid
-		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == true && check_admin_referer('hejbit-settings-options')) {
-			// Schedule the next backup
+		if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == true) {
+			// WordPress Settings API already handles nonce verification
 			hejbit_save_to_nextcloud::hejbit_programSave();
 		}
 		submit_button("Save the schedule"); ?>
