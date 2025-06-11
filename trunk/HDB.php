@@ -161,7 +161,10 @@ class hejbit_save_to_nextcloud{
 
 			
 			case "3":
-				error_log('Sending-Chunk-BEGIN');
+				// Only log BEGIN if this is the first time (fileNumber is 0)
+				if (intval($inProgress['fileNumber']) == 0) {
+					error_log('Sending-Chunk-BEGIN');
+				}
 
 				$nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
 				$hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
@@ -169,8 +172,8 @@ class hejbit_save_to_nextcloud{
 				error_log('Nextcloud status: ' . ($nc_status ? 'active' : 'inactive'));
 				error_log('Hejbit folder status: ' . ($hejbit_folder ? 'exists' : 'does not exist'));
 
-				
-				
+
+
 				// If the connection with NextCloud is correct and folder is hejbit
 				if($nc_status && $hejbit_folder){
 										
@@ -219,7 +222,6 @@ class hejbit_save_to_nextcloud{
 					
 					// Sending the Zip file in chunks to NextCloud (Recommended method by NextCloud)
 					include ('inc/SendChunk.php');
-		
 					
 				} else {
 
@@ -242,7 +244,11 @@ Please ensure that your backup folder is obtained directly from your web server 
 					$this->sendInfo("ERROR",$info);								
 					
 				};	
-				error_log('Sending-Chunk-END');
+				
+				// Only log END when we're done with all chunks (this will be logged when SendChunk.php changes status to 4)
+				// The END message will appear in case "4" or when the process is complete
+				
+				exit();
 		
 			exit();
 			
@@ -783,7 +789,9 @@ add_action( 'rest_api_init', function () {
 	register_rest_route("HDB", 'param', array(
 	'methods' => 'GET',
 	'callback' => 'all_user_param',
-	'permission_callback' => '__return_true',
+	'permission_callback' => function() {
+			return current_user_can( 'manage_options' );
+		},
 	) );
 } );
 	
@@ -846,7 +854,9 @@ add_action( 'rest_api_init', function () {
 		'methods' => 'GET',
 		// Call the method 'all_user_param'
 		'callback' => 'get_all_saves',
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() {
+			return current_user_can( 'manage_options' );
+		},
 	) );
 } );
 

@@ -39,7 +39,8 @@ $file_number = intval( $inProgress['fileNumber'] );
 
 // Check if we've reached the end of the file
 if ( $file_number >= $file_size ) {
-    // File completely read
+    // File completely read - move to next status (MergeChunk)
+    error_log('Sending-Chunk-END'); // Log END here when truly finished
     $datafinish = array(
         "status" => 4,
         "fileNumber" => 0
