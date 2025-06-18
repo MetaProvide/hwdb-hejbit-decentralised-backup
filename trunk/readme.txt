@@ -1,12 +1,12 @@
 === HejBit Decentralised Backup ===
 
 Contributors: joaosraposo, app.hejbit.com , metaprovide.org
-Tested up to: 6.7.2
+Tested up to: 6.8
 Stable tag: 1.0.4
 Requires PHP: 7.3
 License: AGPLv3
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
-Tags: hejbit, nextcloud, webdav, backup, decentralised, swarm
+Tags: nextcloud, webdav, backup, decentralised, swarm
 
 Securely back up your WordPress site to decentralized storage via Nextcloud and HejBit.
 

@@ -69,7 +69,7 @@ if ( !empty( $thisChunk ) ){
     $headers = array(
         'content-type'  => 'application/binary',
         // NextCloud username and password
-        'Authorization' => 'Basic ' . base64_encode(get_option("login_dlwcloud") . ":" . get_option("pass_dlwcloud")),
+        'Authorization' => 'Basic ' . base64_encode(get_option("hejbit_login_dlwcloud") . ":" . get_option("hejbit_pass_dlwcloud")),
     );
                 
     // Prepare the arguments
@@ -90,7 +90,7 @@ if ( !empty( $thisChunk ) ){
     $lastBit =  str_pad( ( $inProgress['fileNumber'] + $memoryFree ), 15, '0', STR_PAD_LEFT);
     
     $resSendChunk = wp_remote_request(
-        get_option('url_dlwcloud').'/remote.php/dav/uploads/' . get_option('login_dlwcloud'). '/' . $inProgress['uuid'] ."/".$firstBit."-".$lastBit, 
+        get_option('hejbit_url_dlwcloud').'/remote.php/dav/uploads/' . get_option('hejbit_login_dlwcloud'). '/' . $inProgress['uuid'] ."/".$firstBit."-".$lastBit, 
         $args
     );
 

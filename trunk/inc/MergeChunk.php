@@ -12,7 +12,7 @@ if( !defined( 'ABSPATH' ) ){ exit(); }
 
 // Check the destination folder
 // Retrieves the folders from the path into an array
-$tab_dir = explode('/', get_option('folder_dlwcloud'));
+$tab_dir = explode('/', get_option('hejbit_folder_dlwcloud'));
 $directoryPath = '';
 
 // For each folder in the path
@@ -33,14 +33,14 @@ foreach ($tab_dir as $dir){
 		  'blocking' => true,
 		  'headers' => array(
 			// NextCloud username and password
-			'Authorization' => 'Basic ' . base64_encode(get_option("login_dlwcloud") . ":" . get_option("pass_dlwcloud")),
+			'Authorization' => 'Basic ' . base64_encode(get_option("hejbit_login_dlwcloud") . ":" . get_option("hejbit_pass_dlwcloud")),
 		   ),
 		  'body' => array(),
 		  'cookies' => array()
 		);
 
 		// Sending the request
-		$resGetUserDestination = wp_remote_request( get_option('url_dlwcloud').'/remote.php/dav/files/'.get_option('login_dlwcloud').$directoryPath, $args );
+		$resGetUserDestination = wp_remote_request( get_option('hejbit_url_dlwcloud').'/remote.php/dav/files/'.get_option('hejbit_login_dlwcloud').$directoryPath, $args );
 
 		// If the user's path does not exist
 		if($resGetUserDestination["response"]["code"] == 404){
@@ -55,16 +55,16 @@ foreach ($tab_dir as $dir){
 			  'blocking' => true,
 			  'headers' => array(
 				// NextCloud username and password
-				'Authorization' => 'Basic ' . base64_encode(get_option("login_dlwcloud") . ":" . 
-				get_option("pass_dlwcloud")),
+				'Authorization' => 'Basic ' . base64_encode(get_option("hejbit_login_dlwcloud") . ":" . 
+				get_option("hejbit_pass_dlwcloud")),
 			   ),
 			  'body' => array(),
 			  'cookies' => array()
 			);
 
 			// Sending the request
-			$resCreateDestination = wp_remote_request(get_option('url_dlwcloud').'/remote.php/dav/files/'.
-			get_option('login_dlwcloud').$directoryPath, $args );
+			$resCreateDestination = wp_remote_request(get_option('hejbit_url_dlwcloud').'/remote.php/dav/files/'.
+			get_option('hejbit_login_dlwcloud').$directoryPath, $args );
 				
 		};
 		
@@ -75,12 +75,12 @@ foreach ($tab_dir as $dir){
 
 // Prepare the headers
 $finalName = "hejbit_save_" . hejbit_save_to_nextcloud::getDomain() . "_" . gmdate('YmdHis') ;
-$destination = get_option('url_dlwcloud').'/remote.php/dav/files/'.get_option('login_dlwcloud').get_option('folder_dlwcloud') . $finalName . ".zip";
+$destination = get_option('hejbit_url_dlwcloud').'/remote.php/dav/files/'.get_option('hejbit_login_dlwcloud').get_option('hejbit_folder_dlwcloud') . $finalName . ".zip";
 
 $headers = array(
  	'content-type'  => 'application/binary',
   	// Login and password entered in the fields
-  	'Authorization' => 'Basic ' . base64_encode(get_option("login_dlwcloud") . ":" . get_option("pass_dlwcloud")),
+  	'Authorization' => 'Basic ' . base64_encode(get_option("hejbit_login_dlwcloud") . ":" . get_option("hejbit_pass_dlwcloud")),
   	// Will be sent to the destination
   	'Destination'   => $destination,
 );
@@ -99,7 +99,7 @@ $args = array(
 );
 
 // Sends the request (Gather the chunks in 'Destination')
-wp_remote_request(get_option('url_dlwcloud').'/remote.php/dav/uploads/' . get_option('login_dlwcloud'). '/' . $inProgress['uuid'] . "/.file", $args );	
+wp_remote_request(get_option('hejbit_url_dlwcloud').'/remote.php/dav/uploads/' . get_option('hejbit_login_dlwcloud'). '/' . $inProgress['uuid'] . "/.file", $args );	
 
 // Changes the backup status according to the database-only option
 $datafinish = array(

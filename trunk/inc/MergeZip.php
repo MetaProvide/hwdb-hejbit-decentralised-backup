@@ -36,7 +36,7 @@ foreach ($sqlFiles as $sqlFile) {
 };
 
 // Add config file for WordPress only if database-only mode is not active
-if(get_option("db_only_dlwcloud") !== "true"){
+if(get_option("hejbit_db_only_dlwcloud") !== "true"){
     
     $zipMerge->addFile(ABSPATH . "wp-config.php", "wordpress/wp-config.php");
     
