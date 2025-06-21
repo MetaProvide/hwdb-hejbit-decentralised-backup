@@ -135,44 +135,32 @@ class hejbit_save_to_nextcloud{
 				          	    
 	          	    
 			case "0":
-				error_log('DB-Exporting-BEGIN');
 				// Export of the DB
 				include ('inc/CreateDB.php');
-				error_log('DB-Exporting-END');	
 				// End of the script before relaunch by cron to avoid timeout
 				exit();
 
 			
 			
 			case "1":
-				error_log('ZIP-Creation-BEGIN');	
 				// Creation of the Zip
 				include ('inc/CreateZip.php');
-				error_log('ZIP-Creation-END');	
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
 			
 			case "2":
-				error_log('Merging-ZIP-BEGIN');
 				// Merging the files to be backed up
 				include ('inc/MergeZip.php');
-				error_log('Merging-ZIP-END');
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
 			
 			case "3":
-				// Only log BEGIN if this is the first time (fileNumber is 0)
-				if (intval($inProgress['fileNumber']) == 0) {
-					error_log('Sending-Chunk-BEGIN');
-				}
 
 				$nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
 				$hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
 				
-				error_log('Nextcloud status: ' . ($nc_status ? 'active' : 'inactive'));
-				error_log('Hejbit folder status: ' . ($hejbit_folder ? 'exists' : 'does not exist'));
 
 
 
@@ -255,7 +243,6 @@ Please ensure that your backup folder is obtained directly from your web server 
 			exit();
 			
 			case "4":
-				error_log('MergingChunk-BEGIN');
 
 				// If the connection with NextCloud is correct
 				if(hejbit_save_to_nextcloud::is_NextCloud_good()){
@@ -289,7 +276,6 @@ Please ensure that your backup folder is obtained directly from your web server 
 					
 
 				};		
-				error_log('MergingChunk-END');		
 		
 			exit();					
 
@@ -405,7 +391,6 @@ Please ensure that your backup folder is obtained directly from your web server 
 			
 		// Check if the request failed to execute
 		if(is_wp_error($nextcloud_response)){
-			error_log('NextCloud connection error: ' . $nextcloud_response->get_error_message());
 			return false;
 		}
 		
@@ -416,7 +401,6 @@ Please ensure that your backup folder is obtained directly from your web server 
 		if($response_code >= 200 && $response_code < 300){
 			return true;
 		} else {
-			error_log('NextCloud returned HTTP ' . $response_code . ': ' . wp_remote_retrieve_response_message($nextcloud_response));
 			return false;
 		}
 	}	
@@ -430,12 +414,10 @@ Please ensure that your backup folder is obtained directly from your web server 
 		$password = get_option("hejbit_pass_dlwcloud");
 		
 		if (empty($url_base) || empty($login) || empty($folder) || empty($password)) {
-			error_log('HejBit: Missing required NextCloud configuration options');
 			return false;
 		}
 		
 		$url = $url_base . '/remote.php/dav/files/' . $login . $folder;
-		error_log('HejBit: Checking folder URL: ' . $url);
 
 		$headers = array(
 			'Content-Type' => 'application/xml',
@@ -461,13 +443,11 @@ Please ensure that your backup folder is obtained directly from your web server 
 			
 		// Check if the request failed to execute
 		if(is_wp_error($nextcloud_response)){
-			error_log('HejBit: NextCloud request error: ' . $nextcloud_response->get_error_message());
 			return false;
 		}
 		
 		// Check the HTTP response code
 		$response_code = wp_remote_retrieve_response_code($nextcloud_response);
-		error_log('HejBit: NextCloud response code: ' . $response_code);
 		
 		// Handle different response codes appropriately
 		switch($response_code) {
@@ -476,19 +456,15 @@ Please ensure that your backup folder is obtained directly from your web server 
 				return hejbit_save_to_nextcloud::check_ethswarm_node_status($nextcloud_response);
 				
 			case 401:
-				error_log('HejBit: Authentication failed - check credentials');
 				return false;
 				
 			case 403:
-				error_log('HejBit: Access forbidden - check permissions for folder: ' . $folder);
 				return false;
 				
 			case 404:
-				error_log('HejBit: Folder not found: ' . $folder);
 				return false;
 				
 			case 405:
-				error_log('HejBit: PROPFIND method not allowed - server may not support WebDAV');
 				return false;
 				
 			default:
@@ -496,20 +472,17 @@ Please ensure that your backup folder is obtained directly from your web server 
 					// Other 2xx codes might be valid
 					return hejbit_save_to_nextcloud::check_ethswarm_node_status($nextcloud_response);
 				} else {
-					error_log('HejBit: Unexpected response code ' . $response_code . ': ' . wp_remote_retrieve_response_message($nextcloud_response));
 					return false;
 				}
 		}
 	}	
 	static function check_ethswarm_node_status($xml_response) {
-		error_log('Response code: ' . wp_remote_retrieve_response_code($xml_response));
 		
 		// Extract the body from the WordPress response array
 		$body = wp_remote_retrieve_body($xml_response);
 
 		// Check if we got a valid body
 		if (empty($body)) {
-			error_log('Empty response body from Nextcloud');
 			return false;
 		}
 		
@@ -520,9 +493,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 		// If XML couldn't be parsed, return false
 		if ($xml === false) {
 			$errors = libxml_get_errors();
-			foreach ($errors as $error) {
-				error_log('XML parsing error: ' . $error->message);
-			}
+
 			libxml_clear_errors();
 			return false;
 		}
@@ -537,17 +508,14 @@ Please ensure that your backup folder is obtained directly from your web server 
 		// Check if element exists and its value
 		if (count($nodes) > 0) {
 			$value = trim((string)$nodes[0]);
-			error_log('ethswarm-node value: "' . $value . '"');
 			
 			// Accept both "1" and "true" as valid values
 			$is_swarm = (strtolower($value) === 'true' || $value === '1');
-			error_log('Is Swarm folder: ' . ($is_swarm ? 'YES' : 'NO'));
 			
 			return $is_swarm;
 		}
 		
 		// Element not found
-		error_log('ethswarm-node element not found in XML');
 		return false;
 	}	
 	
