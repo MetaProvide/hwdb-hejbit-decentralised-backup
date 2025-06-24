@@ -19,9 +19,7 @@
 // Fixes a security issue
 if( !defined( 'ABSPATH' ) ){ exit(); }
 
-// Main folder of the plugin
-define('PLUGIN_PATH_HEJBIT', dirname(plugin_dir_path( __FILE__ )) . "/hdb-hejbit-decentralised-backup/");
-
+// Load the WordPress filesystem
 class hejbit_save_to_nextcloud{	
 	
 	// Activation
@@ -136,7 +134,7 @@ class hejbit_save_to_nextcloud{
 	          	    
 			case "0":
 				// Export of the DB
-				include ('inc/CreateDB.php');
+				include plugin_dir_path(__FILE__) . 'inc/CreateDB.php';
 				// End of the script before relaunch by cron to avoid timeout
 				exit();
 
@@ -144,14 +142,14 @@ class hejbit_save_to_nextcloud{
 			
 			case "1":
 				// Creation of the Zip
-				include ('inc/CreateZip.php');
+				include plugin_dir_path(__FILE__) . 'inc/CreateZip.php';
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
 			
 			case "2":
 				// Merging the files to be backed up
-				include ('inc/MergeZip.php');
+				include plugin_dir_path(__FILE__) . 'inc/MergeZip.php';
 				// End of the script before relaunch by cron to avoid timeout
 				exit();				
 
@@ -211,7 +209,7 @@ class hejbit_save_to_nextcloud{
 					};
 					
 					// Sending the Zip file in chunks to NextCloud (Recommended method by NextCloud)
-					include ('inc/SendChunk.php');
+					include plugin_dir_path(__FILE__) . 'inc/SendChunk.php';
 					
 				} else {
 
@@ -248,7 +246,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 				if(hejbit_save_to_nextcloud::is_NextCloud_good()){
 					
 					// Rebuilding the chunks on NextCloud
-					include ('inc/MergeChunk.php');
+					include plugin_dir_path(__FILE__) . 'inc/MergeChunk.php';
 					
 				} else {
 					
@@ -593,9 +591,9 @@ Please ensure that your backup folder is obtained directly from your web server 
 };
 
 // Admin view
-$save_to_nextcloud=new hejbit_save_to_nextcloud();
-register_activation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextcloud,'activate'));
-register_deactivation_hook( PLUGIN_PATH_HEJBIT . 'HDB.php',array($save_to_nextcloud,'deactivate'));
+$save_to_nextcloud = new hejbit_save_to_nextcloud();
+register_activation_hook(__FILE__, array($save_to_nextcloud, 'activate'));
+register_deactivation_hook(__FILE__, array($save_to_nextcloud, 'deactivate'));
 add_action('hejbit_Save', array($save_to_nextcloud,'hejbit_Save'));
 add_action('hejbit_SaveInProgress', array($save_to_nextcloud,'hejbit_SaveInProgress'));
 // add_action('admin_post_ProgramSave', array($save_to_nextcloud,'hejbit_ProgramSave'));

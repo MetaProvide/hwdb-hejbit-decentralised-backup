@@ -32,7 +32,7 @@ $OA_SQL = array(
 
 // OTHER APPS
 // Including an OtherApps.php file
-$otherSqlFiles = glob(PLUGIN_PATH_HEJBIT . 'inc/OthersApps_*.php');
+$otherSqlFiles = glob(plugin_dir_path(dirname(__FILE__)) . 'inc/OthersApps_*.php');
 foreach ($otherSqlFiles as $sqlFile) {
     include $sqlFile;
 }

@@ -29,8 +29,14 @@ $size = 0;
 // Zip creation
 $zip = new ZipArchive();
 
+// Make sure you're using wp_upload_dir() consistently
 $upload_dir = wp_upload_dir();
 $hejbit_upload_dir = $upload_dir['basedir'] . '/hejbit-backups/';
+
+// Ensure the directory exists
+if (!file_exists($hejbit_upload_dir)) {
+    wp_mkdir_p($hejbit_upload_dir);
+}
 
 
 

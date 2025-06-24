@@ -113,7 +113,7 @@ $info= "Your site backup is complete and decentralized on your Hejbit folder!";
 $this->sendInfo("SUCCESS",$info);
 
 // Cleaning up the backups
-include ('CleanSave.php');
+include plugin_dir_path(__FILE__) . 'CleanSave.php';
 
 // phpcs:enable WordPress.DB
 ?>
