@@ -2,13 +2,15 @@
 
 /**
     This file is used to create a file on the FTP containing the database script for HejBit Decentralised Backup.
-**/
+ **/
 
 // Custom tables used exclusively by this plugin and for infrequent operations (backup)
 // phpcs:disable WordPress.DB
 
 // Fixes a security issue
-if( !defined( 'ABSPATH' ) ){ exit(); }
+if (!defined('ABSPATH')) {
+    exit();
+}
 
 // Load the WordPress filesystem
 global $wp_filesystem;
@@ -40,7 +42,9 @@ foreach ($otherSqlFiles as $sqlFile) {
 foreach ($OA_SQL as $thisDB) {
 
     // Fixes a security issue mentioned in the email
-    if( !defined( 'ABSPATH' ) ){ exit(); }
+    if (!defined('ABSPATH')) {
+        exit();
+    }
 
     // Retrieving all the tables from the database using prepared SQL
     $tables = $wpdb->get_col(
@@ -128,7 +132,6 @@ if (get_option("db_only_dlwcloud") == "true") {
         "status" => 2,
         "fileNumber" => 0
     );
-
 } else {
 
     $datafinish = array(
