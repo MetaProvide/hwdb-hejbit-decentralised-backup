@@ -29,6 +29,51 @@ To use this plugin, you need:
 1. An active Nextcloud instance
 2. A HejBit account (sign up at [app.hejbit.com](https://app.hejbit.com))
 
+== Need Help with Nextcloud Setup? ==
+
+Don't have a Nextcloud instance yet? No problem! We can help you get started with decentralized backups.
+
+**We offer three options:**
+
+1. **Shared Nextcloud Instance**: Quick access to one of Metaprovide's existing Nextcloud instances
+2. **Custom Setup**: We'll set up a dedicated Nextcloud instance for you to have
+3. **Consultation**: Contact us to discuss these options further and communicate any questions you may have before making a decision
+
+**To request assistance:**
+
+Send us an email with the following details:
+
+**Subject:** Nextcloud Setup Request for HejBit Decentralised Backup
+
+**Message Template:**
+```plaintext
+Hello HejBit Support Team,
+
+I'm interested in using the HejBit Decentralised Backup plugin for WordPress. I need some assistance with the setup for Nextcloud. 
+
+Please help with one of these three options:
+[ ] Quick access to one of Metaprovide's existing Nextcloud instances.
+[ ] Setting up a dedicated Nextcloud instance for me.
+[ ] Contact me to discuss these options further, and communicate any questions I may have before making a decision.
+
+My details:
+- Website URL: [Your WordPress site URL]
+- Expected backup size: [Approximate size of your site]
+- Preferred backup frequency: [Daily/Weekly/Monthly]
+- Technical experience level: [Beginner/Intermediate/Advanced]
+
+Additional comments or questions:
+[Any specific requirements or questions you have]
+
+Look forward to hear back from you.
+
+Best regards,
+[Your Name]
+[Your Contact Information]
+```
+
+We typically respond within 24-48 hours and will guide you through the entire setup process to get your decentralized backups running smoothly.
+
 == Installation ==
 
 = Installation from within WordPress =
