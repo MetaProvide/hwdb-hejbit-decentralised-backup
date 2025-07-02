@@ -41,12 +41,13 @@ Don't have a Nextcloud instance yet? No problem! We can help you get started wit
 
 **To request assistance:**
 
+We typically respond within 24-48 hours and will guide you through the entire setup process to get your decentralized backups running smoothly.
+
 Send us an email with the following details:
 
 **Subject:** Nextcloud Setup Request for HejBit Decentralised Backup
 
 **Message Template:**
-```plaintext
 Hello HejBit Support Team,
 
 I'm interested in using the HejBit Decentralised Backup plugin for WordPress. I need some assistance with the setup for Nextcloud. 
@@ -70,9 +71,7 @@ Look forward to hear back from you.
 Best regards,
 [Your Name]
 [Your Contact Information]
-```
 
-We typically respond within 24-48 hours and will guide you through the entire setup process to get your decentralized backups running smoothly.
 
 == Installation ==
 
@@ -116,7 +115,10 @@ Currently, the maximum limit for saving the backup ZIP file in Swarm is around 1
 5. Reassembling the chunks and moving them to the final Nextcloud folder
 6. Cleaning of residual files on the hosting and deletion of obsolete backups on Nextcloud
 
-API, Two access points are available:
+= API =
+
+Two access points are available:
+
 * /wp-json/HDB/saves to retrieve the number of active backups and their name, as well as the next backup
 * /wp-json/HDB/param to retrieve the backup frequency, the day, the time and the number to keep
 
@@ -149,7 +151,7 @@ HejBit offers a 14-day free trial for new users to test the decentralized storag
 
 == Links ==
 
-https://app.hejbit.com/
+* [HejBit App](https://app.hejbit.com/)
 
 == Acknowledgements ==
 
