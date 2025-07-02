@@ -122,9 +122,10 @@ Two access points are available:
 * /wp-json/HDB/saves to retrieve the number of active backups and their name, as well as the next backup
 * /wp-json/HDB/param to retrieve the backup frequency, the day, the time and the number to keep
 
-Disable the plugin: delete the schedules
+= Uninstalling the Plugin =
 
-Delete the plugin : remove tables and options
+* Disable the plugin: delete the schedules
+* Delete the plugin : remove tables and options
 
 == Data Handling ==
 
