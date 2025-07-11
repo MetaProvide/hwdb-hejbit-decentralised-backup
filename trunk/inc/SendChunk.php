@@ -66,6 +66,9 @@ $thisChunk = $wp_filesystem->get_contents(
 
 // While the file is not completely read
 if (!empty($thisChunk)) {
+    // Get ACTUAL bytes read (critical fix)
+    $actual_bytes_read = strlen($thisChunk);
+    
     // Prepare the headers
     $headers = array(
         'content-type'  => 'application/binary',
@@ -88,15 +91,15 @@ if (!empty($thisChunk)) {
 
     // Sends the request (creates the chunk file in the UUID folder)
     $firstBit = str_pad($inProgress['fileNumber'], 15, '0', STR_PAD_LEFT);
-    $lastBit =  str_pad(($inProgress['fileNumber'] + $memoryFree), 15, '0', STR_PAD_LEFT);
+    $lastBit = str_pad(($inProgress['fileNumber'] + $actual_bytes_read), 15, '0', STR_PAD_LEFT); // Use actual bytes
 
     $resSendChunk = wp_remote_request(
         get_option('hejbit_url_dlwcloud') . '/remote.php/dav/uploads/' . get_option('hejbit_login_dlwcloud') . '/' . $inProgress['uuid'] . "/" . $firstBit . "-" . $lastBit,
         $args
     );
 
-    // Update the database with the new file number
-    $data = array("fileNumber"  => ($inProgress['fileNumber'] + $memoryFree));
+    // Update the database with ACTUAL bytes read (critical fix)
+    $data = array("fileNumber" => ($inProgress['fileNumber'] + $actual_bytes_read));
     $where = array("finish" => 0);
     $wpdb->update($wpdb->prefix . 'hejbit_saveInProgress', $data, $where);
 
