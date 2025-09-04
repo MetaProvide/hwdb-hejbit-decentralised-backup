@@ -831,7 +831,6 @@ add_action('rest_api_init', function () {
 	));
 });
 
-
 function hejbit_get_all_saves()
 {
 
@@ -900,6 +899,34 @@ add_action('rest_api_init', function () {
 // Admin page
 function hejbit_savetonextcloud_param()
 { ?>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+    	var btn = document.getElementById('hejbit-test-nextcloud');
+    	if (btn) {
+        	btn.addEventListener('click', function() {
+            	var resultDiv = document.getElementById('hejbit-nextcloud-result');
+            	resultDiv.innerHTML = 'Testing connection...';
+            	fetch(ajaxurl, {
+                	method: 'POST',
+                	headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                	body: 'action=hejbit_test_nextcloud'
+            	})
+            	.then(response => response.json())
+            	.then(data => {
+                	if (data.success) {
+    					resultDiv.innerHTML = '✅ Connection established.<br>' +
+        					(data.hejbit_folder ? '✅ Hejbit folder exists.' : '❌ Hejbit folder does NOT exist.');
+					} else {
+    					resultDiv.innerHTML = '❌ Connection failed: ' + data.message;
+					}
+            	})
+            	.catch(() => {
+                	resultDiv.innerHTML = '❌ Error testing connection.';
+           		});
+       		});
+    	}
+	});
+	</script>
 
 	<div class="wrap">
 		<h2>HejBit Decentralised Backup</h2>
@@ -959,15 +986,18 @@ function hejbit_savetonextcloud_param()
 				</tr>
 
 				<tr valign="top">
-					<th scope="row" style="width:350px;">Remote Backup Folder ( /Hejbit/WordpressBackups/ )</th>
-					<td><input type="text" name="hejbit_folder_dlwcloud" value="<?php if (!empty(get_option('hejbit_folder_dlwcloud'))) {
-																					echo
-																					esc_html(get_option('hejbit_folder_dlwcloud'));
-																				} else {
-																					echo "";
-																				}; ?>" required /></td>
+					<th scope="row" style="width:350px;">Remote Backup Folder ( /Hejbit/WordpressBackups/ )
+						<p>
+							Save the schedule first to use this button.
+						</p>
+					</th>
+					<td style="display: flex; align-items: center; gap: 10px;">
+						<input type="text" name="hejbit_folder_dlwcloud" value="<?php echo esc_html(get_option('hejbit_folder_dlwcloud', '')); ?>" required />
+						<button type="button" id="hejbit-test-nextcloud" class="button">Test Nextcloud Connection</button>
+						<div id="hejbit-nextcloud-result" style="margin-left:10px;"></div>
+					</td>
 				</tr>
-
+			
 				<tr valign="top">
 					<th scope="row" style="width:350px;">Notification email separated by ;</th>
 					<td><input type="text" name="hejbit_email_dlwcloud" value="<?php if (!empty(get_option('hejbit_email_dlwcloud'))) {
@@ -1026,4 +1056,29 @@ function hejbit_savetonextcloud_param()
 		</p>
 	</div>
 <?php settings_errors('hejbit');
-}; ?>
+}; 
+
+//Handler AJAX for testing Nextcloud connection (button)
+add_action('wp_ajax_hejbit_test_nextcloud', function() {
+    if (!current_user_can('manage_options')) {
+        wp_send_json(array('success' => false, 'message' => 'Permission denied.'));
+    }
+    $nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
+    if (!$nc_status) {
+        wp_send_json(array('success' => false, 'message' => 'Could not connect to Nextcloud.'));
+    }
+    $hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
+    if ($hejbit_folder) {
+        wp_send_json(array(
+            'success' => true,
+            'hejbit_folder' => true
+        ));
+    } else {
+        wp_send_json(array(
+            'success' => true,
+            'hejbit_folder' => false
+        ));
+    }
+});
+
+?>
