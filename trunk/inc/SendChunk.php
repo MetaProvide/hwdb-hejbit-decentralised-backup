@@ -66,6 +66,14 @@ $thisChunk = $wp_filesystem->get_contents(
 
 // While the file is not completely read
 if (!empty($thisChunk)) {
+    
+    // Log chunk send
+    hejbit_save_to_nextcloud::log('Sending chunk to NextCloud', 'INFO', 'SEND_CHUNK', array(
+        'chunk_start' => $inProgress['fileNumber'],
+        'chunk_size' => strlen($thisChunk),
+        'total_size' => $file_size
+    ));
+
     // Get ACTUAL bytes read (critical fix)
     $actual_bytes_read = strlen($thisChunk);
     
@@ -97,6 +105,23 @@ if (!empty($thisChunk)) {
         get_option('hejbit_url_dlwcloud') . '/remote.php/dav/uploads/' . get_option('hejbit_login_dlwcloud') . '/' . $inProgress['uuid'] . "/" . $firstBit . "-" . $lastBit,
         $args
     );
+
+    // Check response
+    if (is_wp_error($resSendChunk)) {
+        hejbit_save_to_nextcloud::log('Failed to send chunk', 'ERROR', 'SEND_CHUNK', array(
+            'error' => $resSendChunk->get_error_message()
+        ));
+    } else {
+        $response_code = wp_remote_retrieve_response_code($resSendChunk);
+        if ($response_code >= 200 && $response_code < 300) {
+            hejbit_save_to_nextcloud::log('Chunk sent successfully', 'INFO', 'SEND_CHUNK');
+        } else {
+            hejbit_save_to_nextcloud::log('Chunk send failed with HTTP error', 'ERROR', 'SEND_CHUNK', array(
+                'http_code' => $response_code
+            ));
+        }
+        
+    }
 
     // Update the database with ACTUAL bytes read (critical fix)
     $data = array("fileNumber" => ($inProgress['fileNumber'] + $actual_bytes_read));

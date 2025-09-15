@@ -12,6 +12,11 @@ if (!defined('ABSPATH')) {
 	exit();
 }
 
+// Log start of ZIP creation
+hejbit_save_to_nextcloud::log('Creating ZIP archive', 'INFO', 'CREATE_ZIP', array(
+    'fileNumber' => $inProgress['fileNumber']
+));
+
 // Listing of files to back up with exclusion of cache folders
 $content_file = new RecursiveIteratorIterator(
 	new RecursiveCallbackFilterIterator(
@@ -75,7 +80,11 @@ foreach ($content_file as $name => $file) {
 					// Potentially problematic code
 					$zip->addFile($filePath, "wordpress/wp-content/" . $relativePath);
 				} catch (Exception $e) {
-					// Exception handling
+				    // Log the error for logs window
+					hejbit_save_to_nextcloud::log('Failed to add file to ZIP', 'WARNING', 'CREATE_ZIP', array(
+						'file' => $relativePath,
+						'error' => $e->getMessage()
+					));	
 
 					// Build the error file path in the same location as the original file
 					$errorFilePath = "wordpress/wp-content/" . $relativePath . "_erreur.txt";
