@@ -12,6 +12,9 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
+// Log start of database backup
+hejbit_save_to_nextcloud::log('Creating database backup', 'INFO', 'CREATE_DB');
+
 // Load the WordPress filesystem
 global $wp_filesystem;
 
@@ -142,6 +145,11 @@ if (get_option("db_only_dlwcloud") == "true") {
 
 $wherefinish = array("finish" => 0);
 $wpdb->update($wpdb->prefix . 'hejbit_saveInProgress', $datafinish, $wherefinish);
+
+// Log completion
+hejbit_save_to_nextcloud::log('Database backup completed successfully', 'SUCCESS', 'CREATE_DB', array(
+    'databases' => count($OA_SQL)
+));
 
 // Launch the next step
 wp_schedule_single_event(time(), 'hejbit_SaveInProgress');

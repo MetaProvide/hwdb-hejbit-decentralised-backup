@@ -39,7 +39,7 @@ class hejbit_save_to_nextcloud
 		// Table name
 		$nameTable = $wpdb->prefix . 'hejbit_saveInProgress';
 		// Query for creating the table
-		$sql = "CREATE TABLE IF NOT EXISTS $nameTable ( 
+		$sql1 = "CREATE TABLE IF NOT EXISTS $nameTable ( 
 					id_zip int(11) NOT NULL auto_increment,
 					name text DEFAULT NULL,
 					fileNumber varchar(100) DEFAULT 0,
@@ -49,11 +49,28 @@ class hejbit_save_to_nextcloud
 					PRIMARY KEY (id_zip)
 				)$charset_collate;";
 
+		// Create logs table
+    	$logsTable = $wpdb->prefix . 'hejbit_logs';
+    	$sql2 = "CREATE TABLE IF NOT EXISTS $logsTable (
+            		id int(11) NOT NULL auto_increment,
+                	backup_id int(11) DEFAULT NULL,
+                	timestamp datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                	log_level varchar(20) DEFAULT 'INFO',
+                	step varchar(50) DEFAULT NULL,
+                	message text,
+                	details longtext,
+                	PRIMARY KEY (id),
+                	KEY backup_id_idx (backup_id),
+                	KEY timestamp_idx (timestamp)
+            	)$charset_collate;";		
+
 		// Fetches the doc to modify the DB
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 		// Applies the queries
-		dbDelta($sql);
+		dbDelta($sql1);
+		dbDelta($sql2);
+
 	}
 
 	// Deactivation
@@ -62,22 +79,21 @@ class hejbit_save_to_nextcloud
 
 		//Deletion of the cron jobs
 		if (wp_next_scheduled('hejbit_Save')) {
-
 			wp_clear_scheduled_hook('hejbit_Save');
 		};
 
 		if (wp_next_scheduled('hejbit_Save', array('next'))) {
-
 			wp_clear_scheduled_hook('hejbit_Save', array('next'));
 		};
 
 		// Delete the tables
 		global $wpdb;
-		$nameTable = 'hejbit_saveInProgress';
-		$table_name = $wpdb->prefix . $nameTable;
+		$tables = array('hejbit_saveInProgress', 'hejbit_logs');
 
-		// Sanitize the table name and execute the query
-		$wpdb->query("DROP TABLE IF EXISTS `{$table_name}`");
+		foreach ($tables as $table) {
+			$table_name = $wpdb->prefix . $table;
+			$wpdb->query("DROP TABLE IF EXISTS `{$table_name}`");
+		}
 
 		// Deletion of the options
 		$plugin_options = $wpdb->get_results(
@@ -111,6 +127,9 @@ class hejbit_save_to_nextcloud
 		// If no backup is in progress, create a new backup
 		if (empty($rows->id_zip)) {
 
+			 // Log new backup start
+        	self::log('Starting new backup process', 'INFO', 'INIT');
+			
 			// Creation of a new backup
 			$tableName = $wpdb->prefix . 'hejbit_saveInProgress';
 
@@ -121,6 +140,11 @@ class hejbit_save_to_nextcloud
 
 			$wpdb->insert($tableName, $inProgress);
 		} else {
+			// Log resume
+			self::log('Resuming backup process', 'INFO', 'RESUME', array(
+				'status' => $rows->status,
+				'fileNumber' => $rows->fileNumber
+			));
 
 			$inProgress = array(
 				"fileNumber" => $rows->fileNumber,
@@ -129,11 +153,12 @@ class hejbit_save_to_nextcloud
 			);
 		};
 
-		// Resumption based on the backup status
+		// Resumption based on the backup status (add logging for each case)
 		switch ($inProgress['status']) {
 
 
 			case "0":
+				self::log('Starting database export', 'INFO', 'CREATE_DB');
 				// Export of the DB
 				include plugin_dir_path(__FILE__) . 'inc/CreateDB.php';
 				// End of the script before relaunch by cron to avoid timeout
@@ -142,6 +167,7 @@ class hejbit_save_to_nextcloud
 
 
 			case "1":
+				self::log('Starting ZIP creation', 'INFO', 'CREATE_ZIP');
 				// Creation of the Zip
 				include plugin_dir_path(__FILE__) . 'inc/CreateZip.php';
 				// End of the script before relaunch by cron to avoid timeout
@@ -149,6 +175,7 @@ class hejbit_save_to_nextcloud
 
 
 			case "2":
+				self::log('Merging backup files', 'INFO', 'MERGE_ZIP');
 				// Merging the files to be backed up
 				include plugin_dir_path(__FILE__) . 'inc/MergeZip.php';
 				// End of the script before relaunch by cron to avoid timeout
@@ -156,12 +183,17 @@ class hejbit_save_to_nextcloud
 
 
 			case "3":
+				self::log('Preparing to send to NextCloud', 'INFO', 'SEND_CHUNK');
 
 				$nc_status = hejbit_save_to_nextcloud::is_NextCloud_good();
 				$hejbit_folder = hejbit_save_to_nextcloud::is_Folder_hejbit();
 
-
-
+				if (!$nc_status) {
+					self::log('NextCloud connection failed', 'ERROR', 'SEND_CHUNK');
+				}
+				if (!$hejbit_folder) {
+					self::log('Invalid HejBit folder', 'ERROR', 'SEND_CHUNK');
+				}
 
 				// If the connection with NextCloud is correct and folder is hejbit
 				if ($nc_status && $hejbit_folder) {
@@ -239,6 +271,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 				exit();
 
 			case "4":
+				self::log('Merging chunks on NextCloud', 'INFO', 'MERGE_CHUNK');
 
 				// If the connection with NextCloud is correct
 				if (hejbit_save_to_nextcloud::is_NextCloud_good()) {
@@ -306,6 +339,9 @@ Please ensure that your backup folder is obtained directly from your web server 
 			wp_delete_file($file);
 		};
 
+		// Clean old logs (keep last 30 days by default)
+		$logs_retention = get_option('hejbit_logs_retention', 30);
+		hejbit_save_to_nextcloud::clean_logs($logs_retention);
 
 		// Starting the backup - THIS SHOULD ALWAYS HAPPEN
 		if (!wp_next_scheduled('hejbit_SaveInProgress')) {
@@ -593,6 +629,79 @@ Please ensure that your backup folder is obtained directly from your web server 
 
 		return (int)$memoryLimit;
 	}
+
+	// Logging method
+	static function log($message, $level = 'INFO', $step = null, $details = null) {
+		global $wpdb;
+		
+		// Get current backup ID
+		$backup_id = null;
+		$current_backup = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT id_zip FROM {$wpdb->prefix}hejbit_saveInProgress WHERE finish = %d",
+				0
+			)
+		);
+		
+		if ($current_backup) {
+			$backup_id = $current_backup->id_zip;
+		}
+		
+		// Insert log entry
+		$wpdb->insert(
+			$wpdb->prefix . 'hejbit_logs',
+			array(
+				'backup_id' => $backup_id,
+				'log_level' => $level,
+				'step' => $step,
+				'message' => $message,
+				'details' => $details ? json_encode($details) : null
+			),
+			array('%d', '%s', '%s', '%s', '%s')
+		);
+	}
+
+	// Get logs for display
+	static function get_logs($backup_id = null, $limit = 100, $offset = 0) {
+		global $wpdb;
+		
+		$where = '';
+		$prepare_values = array();
+		
+		if ($backup_id !== null) {
+			$where = "WHERE backup_id = %d";
+			$prepare_values[] = $backup_id;
+		}
+		
+		$prepare_values[] = $limit;
+		$prepare_values[] = $offset;
+		
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT l.*, s.name as backup_name 
+				FROM {$wpdb->prefix}hejbit_logs l
+				LEFT JOIN {$wpdb->prefix}hejbit_saveInProgress s ON l.backup_id = s.id_zip
+				{$where}
+				ORDER BY l.timestamp DESC
+				LIMIT %d OFFSET %d",
+				$prepare_values
+			)
+		);
+	}
+
+	// Clean old logs
+	static function clean_logs($days_to_keep = 30) {
+		global $wpdb;
+		
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->prefix}hejbit_logs 
+				WHERE timestamp < DATE_SUB(NOW(), INTERVAL %d DAY)",
+				$days_to_keep
+			)
+		);
+		return $deleted;
+	}
 };
 
 // Admin view
@@ -628,8 +737,12 @@ if (is_admin()) {
 	{
 		// Menu creation
 		add_menu_page('HejBit Decentralised Backup', 'HejBit Decentralised Backup', 'manage_options', 'hejbit_nextcloud');
+		
 		// Adds a 'Backup' sub-menu
 		add_submenu_page('hejbit_nextcloud', 'Backup', 'Backup', 'manage_options', 'hejbit_decentralised-backup', 'hejbit_savetonextcloud_param');
+
+		// Add logs sub-menu
+    	add_submenu_page('hejbit_nextcloud', 'Logs', 'Logs', 'manage_options', 'hejbit_logs', 'hejbit_logs_page');
 
 		// The method 'add_menu_page()' also creates a 'HejBit Decentralised Backup' sub-menu, so we delete it
 		remove_submenu_page('hejbit_nextcloud', 'hejbit_nextcloud');
@@ -1080,5 +1193,130 @@ add_action('wp_ajax_hejbit_test_nextcloud', function() {
         ));
     }
 });
+
+// Logs page
+function hejbit_logs_page() {
+    // Handle log cleanup if requested
+    if (isset($_POST['clear_old_logs']) && wp_verify_nonce($_POST['hejbit_logs_nonce'], 'hejbit_clear_logs')) {
+        $days = intval($_POST['days_to_keep']);
+        $deleted = hejbit_save_to_nextcloud::clean_logs($days);
+        echo '<div class="notice notice-success"><p>' . sprintf('Deleted %d old log entries.', $deleted) . '</p></div>';
+    }
+    
+    // Pagination
+    $page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
+    $per_page = 50;
+    $offset = ($page - 1) * $per_page;
+    
+    // Get logs
+    $logs = hejbit_save_to_nextcloud::get_logs(null, $per_page, $offset);
+    
+    // Get total count for pagination
+    global $wpdb;
+    $total_logs = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hejbit_logs");
+    $total_pages = ceil($total_logs / $per_page);
+    ?>
+    
+    <div class="wrap">
+        <h1>HejBit Backup Logs</h1>
+        
+        <div style="margin: 20px 0;">
+            <form method="post" style="display: inline;">
+                <?php wp_nonce_field('hejbit_clear_logs', 'hejbit_logs_nonce'); ?>
+                <label>Keep logs for: <input type="number" name="days_to_keep" value="30" min="1" max="365" style="width: 60px;"> days</label>
+                <input type="submit" name="clear_old_logs" class="button" value="Clean Old Logs">
+				<input type="button" class="button" value="Refresh" onclick="location.reload();">
+            </form>
+        </div>
+
+		<div style="margin-bottom: 20px; padding: 10px; background: #f8f8f8; border: 1px solid #eee;">
+			<strong>Backup Status Codes:</strong>
+			<ul style="margin: 8px 0 0 20px;">
+				<li><strong>0</strong>: Start of backup (database export)</li>
+				<li><strong>1</strong>: ZIP creation (zipping files)</li>
+				<li><strong>2</strong>: Merge ZIP (merging backup files)</li>
+				<li><strong>3</strong>: Send chunks to NextCloud (uploading backup)</li>
+				<li><strong>4</strong>: Merge chunks on NextCloud (finalizing backup)</li>
+			</ul>
+		</div>
+        
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th style="width: 150px;">Timestamp</th>
+                    <th style="width: 80px;">Level</th>
+                    <th style="width: 100px;">Step</th>
+                    <th>Message</th>
+                    <th style="width: 150px;">Backup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($logs)): ?>
+                    <tr>
+                        <td colspan="5">No logs found.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($logs as $log): ?>
+                        <tr class="log-<?php echo esc_attr(strtolower($log->log_level)); ?>">
+                            <td><?php echo esc_html($log->timestamp); ?></td>
+                            <td>
+                                <span style="
+                                    padding: 2px 8px;
+                                    border-radius: 3px;
+                                    color: white;
+                                    background-color: <?php 
+                                        echo $log->log_level === 'ERROR' ? '#dc3232' : 
+                                            ($log->log_level === 'WARNING' ? '#ffb900' : 
+                                            ($log->log_level === 'SUCCESS' ? '#46b450' : '#0073aa')); 
+                                    ?>;">
+                                    <?php echo esc_html($log->log_level); ?>
+                                </span>
+                            </td>
+                            <td><?php echo esc_html($log->step ?: '-'); ?></td>
+                            <td>
+                                <?php echo esc_html($log->message); ?>
+                                <?php if ($log->details): ?>
+                                    <?php $details = json_decode($log->details, true); ?>
+                                    <?php if ($details): ?>
+                                        <div style="margin-top: 5px; font-size: 12px; color: #666;">
+                                            <?php foreach ($details as $key => $value): ?>
+                                                <strong><?php echo esc_html($key); ?>:</strong> <?php echo esc_html($value); ?><br>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </td>
+                            <td><?php echo esc_html($log->backup_name ?: 'Current'); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        
+        <?php if ($total_pages > 1): ?>
+            <div class="tablenav bottom">
+                <div class="tablenav-pages">
+                    <?php
+                    echo paginate_links(array(
+                        'base' => add_query_arg('paged', '%#%'),
+                        'format' => '',
+                        'prev_text' => '&laquo;',
+                        'next_text' => '&raquo;',
+                        'total' => $total_pages,
+                        'current' => $page
+                    ));
+                    ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+    
+    <style>
+        .log-error { background-color: #ffebe8 !important; }
+        .log-warning { background-color: #fff8e5 !important; }
+        .log-success { background-color: #edfaef !important; }
+    </style>
+    <?php
+}
 
 ?>

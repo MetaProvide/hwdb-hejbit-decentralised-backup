@@ -108,6 +108,12 @@ $datafinish = array(
 $wherefinish = array("finish" => 0);
 $wpdb->update($wpdb->prefix . 'hejbit_saveInProgress', $datafinish, $wherefinish);
 
+// Log successful completion
+hejbit_save_to_nextcloud::log('Backup completed successfully', 'SUCCESS', 'MERGE_CHUNK', array(
+    'filename' => $finalName . '.zip',
+    'destination' => get_option('hejbit_folder_dlwcloud')
+));
+
 $info = "Your site backup is complete and decentralized on your Hejbit folder!";
 $this->sendInfo("SUCCESS", $info);
 
