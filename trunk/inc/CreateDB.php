@@ -88,7 +88,7 @@ foreach ($OA_SQL as $thisDB) {
         $wp_filesystem->put_contents($dbfile, $drop_table_sql, FS_CHMOD_FILE | FILE_APPEND);
 
         // Retrieve the table creation script
-        $createTable = $wpdb->get_row("SHOW CREATE TABLE `" . esc_sql($table) . "`", ARRAY_N);
+        $createTable = $wpdb->get_row($wpdb->prepare("SHOW CREATE TABLE `%s`", $table), ARRAY_N);
         $wp_filesystem->put_contents($dbfile, $createTable[1] . ";\n\n", FS_CHMOD_FILE | FILE_APPEND);
 
         // Retrieve the table data

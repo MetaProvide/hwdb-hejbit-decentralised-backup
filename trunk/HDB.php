@@ -676,6 +676,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 		$prepare_values[] = $limit;
 		$prepare_values[] = $offset;
 		
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT l.*, s.name as backup_name 
@@ -693,6 +694,7 @@ Please ensure that your backup folder is obtained directly from your web server 
 	static function clean_logs($days_to_keep = 30) {
 		global $wpdb;
 		
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->prefix}hejbit_logs 
@@ -703,6 +705,8 @@ Please ensure that your backup folder is obtained directly from your web server 
 		return $deleted;
 	}
 };
+
+// phpcs:enable WordPress.DB
 
 // Admin view
 $save_to_nextcloud = new hejbit_save_to_nextcloud();
@@ -953,6 +957,7 @@ function hejbit_get_all_saves()
 	$result = array();
 
 	// Execute the query to retrieve all backups
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$allSaves = $wpdb->get_results(
 		"SELECT * FROM {$wpdb->prefix}hejbit_saveInProgress"
 	);
@@ -1197,11 +1202,15 @@ add_action('wp_ajax_hejbit_test_nextcloud', function() {
 // Logs page
 function hejbit_logs_page() {
     // Handle log cleanup if requested
-    if (isset($_POST['clear_old_logs']) && wp_verify_nonce($_POST['hejbit_logs_nonce'], 'hejbit_clear_logs')) {
-        $days = intval($_POST['days_to_keep']);
-        $deleted = hejbit_save_to_nextcloud::clean_logs($days);
-        echo '<div class="notice notice-success"><p>' . sprintf('Deleted %d old log entries.', $deleted) . '</p></div>';
-    }
+	if (
+		isset($_POST['clear_old_logs']) &&
+		isset($_POST['hejbit_logs_nonce']) &&
+		wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['hejbit_logs_nonce'])), 'hejbit_clear_logs')
+	) {
+		$days = isset($_POST['days_to_keep']) ? intval($_POST['days_to_keep']) : 30;
+		$deleted = hejbit_save_to_nextcloud::clean_logs($days);
+		echo '<div class="notice notice-success"><p>' . sprintf('Deleted %d old log entries.', esc_html($deleted)) . '</p></div>';
+	}
     
     // Pagination
     $page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
@@ -1212,9 +1221,19 @@ function hejbit_logs_page() {
     $logs = hejbit_save_to_nextcloud::get_logs(null, $per_page, $offset);
     
     // Get total count for pagination
-    global $wpdb;
-    $total_logs = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hejbit_logs");
-    $total_pages = ceil($total_logs / $per_page);
+	global $wpdb;
+	// Try to get cached value first
+	$cache_key = 'hejbit_total_logs_count';
+	$total_logs = wp_cache_get($cache_key, 'hejbit_logs');
+	if (false === $total_logs) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_logs = $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$wpdb->prefix}hejbit_logs"
+		);
+		wp_cache_set($cache_key, $total_logs, 'hejbit_logs', 300); // Cache for 5 minutes
+	}
+
+	$total_pages = ceil($total_logs / $per_page);
     ?>
     
     <div class="wrap">
@@ -1297,14 +1316,17 @@ function hejbit_logs_page() {
             <div class="tablenav bottom">
                 <div class="tablenav-pages">
                     <?php
-                    echo paginate_links(array(
-                        'base' => add_query_arg('paged', '%#%'),
-                        'format' => '',
-                        'prev_text' => '&laquo;',
-                        'next_text' => '&raquo;',
-                        'total' => $total_pages,
-                        'current' => $page
-                    ));
+					$pagination_links = paginate_links(array(
+						'base' => add_query_arg('paged', '%#%'),
+						'format' => '',
+						'prev_text' => '&laquo;',
+						'next_text' => '&raquo;',
+						'total' => $total_pages,
+						'current' => $page
+					));
+					if ($pagination_links) {
+						echo wp_kses_post($pagination_links);
+					}
                     ?>
                 </div>
             </div>
@@ -1318,5 +1340,4 @@ function hejbit_logs_page() {
     </style>
     <?php
 }
-
 ?>

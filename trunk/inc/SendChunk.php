@@ -64,6 +64,11 @@ $thisChunk = $wp_filesystem->get_contents(
     )
 );
 
+if ($thisChunk === false) {
+    hejbit_save_to_nextcloud::log('Failed to read file chunk', 'ERROR', 'SEND_CHUNK');
+    return;
+}
+
 // While the file is not completely read
 if (!empty($thisChunk)) {
     
