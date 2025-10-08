@@ -2,7 +2,7 @@
 
 Contributors: joaosraposo, app.hejbit.com , metaprovide.org
 Tested up to: 6.8
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 Requires PHP: 7.3
 License: AGPLv3
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -19,6 +19,10 @@ Once you have configured the parameters, the plugin will automatically run in th
 This plugin is easy to install and configure, and it offers a complete backup solution to protect your site from data loss in the event of a technical problem or hacking. By choosing this plugin, you can have peace of mind knowing that your site is safe.
 
 WARNING: Automatic restoration of backups is not yet possible. It must be done manually by replacing the files on the hosting and restoring the database(DB).
+
+**New in version 1.0.7:** 
+- Comprehensive logging system accessible via HejBit Decentralised Backup > Logs submenu to monitor all backup operations
+- Test NextCloud Connection button to verify your setup before running backups
 
 == Required Third-Party Services == 
 
@@ -97,6 +101,47 @@ The "Make a backup now" button starts the backup
 Advanced options:
 - Set the number of backups to keep (up to 10)
 - Enable automatic update blocking: the core, plugins and themes being tagged to be updated automatically, will only be updated after a scheduled backup in order to prevent it from being polluted by a faulty plugin. Manual updates are still possible.
+
+= Testing Your Connection =
+
+Before running your first backup, fill in all the fields, click **Save Schedule**, and use the **Test NextCloud Connection** button next to the Remote Backup Folder field to verify:
+- Your NextCloud credentials and URL are correct
+- The connection to your NextCloud instance is established
+- Your specified folder is a valid HejBit folder
+
+The test will show:
+- ✅ Connection established - if NextCloud connection is successful
+- ✅ Hejbit folder exists - if the folder is properly configured for HejBit
+- ❌ Connection failed: Could not connect to Nextcloud - if the URL or credentials are incorrect
+- ❌ Hejbit folder does NOT exist - if the Remote Backup Folder path is invalid, missing, or a regular folder.
+
+= Monitoring Backups =
+
+The plugin includes a comprehensive logging system accessible via **HejBit Decentralised Backup > Logs**:
+
+**Log Features:**
+- Real-time backup progress tracking
+- Color-coded log levels: INFO (blue), SUCCESS (green), WARNING (yellow), ERROR (red)
+- Detailed status codes showing backup stages:
+  * 0: Database export
+  * 1: ZIP creation (file compression)
+  * 2: ZIP merging
+  * 3: Upload to NextCloud (chunk sending)
+  * 4: Finalizing backup on NextCloud
+- Timestamp for each operation
+- Associated backup names for easy identification
+
+**Log Management:**
+- Clean old logs by specifying retention period (default: 30 days)
+- Refresh button to update log display
+- Pagination for easy navigation through historical logs
+
+This feature helps you:
+- Monitor backup progress in real-time
+- Quickly identify and troubleshoot any backup failures
+- Maintain a history of all backup operations
+- Ensure your backups are completing successfully
+
 
 = Process Duration =
 
