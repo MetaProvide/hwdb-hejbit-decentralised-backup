@@ -142,6 +142,35 @@ This feature helps you:
 - Maintain a history of all backup operations
 - Ensure your backups are completing successfully
 
+== Server Configuration for Large Backups ==
+To ensure successful backup uploads for websites of all sizes, especially large sites, you need adjust your server’s PHP, Nginx, and Nextcloud configuration as follows:
+
+**1. PHP configuration (`php.ini`):**
+Consider increasing limits related to file size and execution time.
+Here’s an example configuration that allowed large uploads to complete successfully:
+- memory_limit = 5G 
+- post_max_size = 5G 
+- upload_max_filesize = 5G 
+- max_execution_time = 7200 
+- max_input_time = 7200
+(Use values appropriate for your environment)
+
+**2. Nginx configuration:**
+Nginx uses the client_max_body_size directive to control the maximum allowed size of an upload.
+For example, to support uploads of several gigabytes, you might include a line like this in your nginx.conf (inside the http, server, or location block):
+- client_max_body_size = 5G;
+(Adjust the size limit to match your PHP and Nextcloud settings.)
+
+**3. Nextcloud configuration (config.php):**
+You may also want to review Nextcloud’s upload-related settings.
+Here’s an example:
+- 'uploadtimeout' => 7200,        // maximum time (in seconds) allowed for uploads
+- 'max_chunk_size' => 10485760,   // chunk size (in bytes); 10MB is a good balance
+(These are reference values — feel free to adjust them as needed.)
+
+Note:
+These settings are essential for handling large backup files and preventing timeouts or upload failures.
+If you are on shared hosting, you may need to contact your hosting provider to increase these limits.
 
 = Process Duration =
 
