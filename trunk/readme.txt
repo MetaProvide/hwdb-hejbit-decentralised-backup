@@ -2,7 +2,7 @@
 
 Contributors: joaosraposo, app.hejbit.com , metaprovide.org
 Tested up to: 6.8
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires PHP: 7.3
 License: AGPLv3
 License URI: https://www.gnu.org/licenses/agpl-3.0.html

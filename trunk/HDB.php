@@ -7,7 +7,7 @@
  * Requires at least: 6.7
  * Tested up to: 6.7.2
  * Requires PHP: 7.3
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: Hejbit, Joaosraposo
  * License: AGPLv3
  * License URI: https://www.gnu.org/licenses/agpl-3.0.html
